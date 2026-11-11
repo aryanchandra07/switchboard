@@ -1,0 +1,108 @@
+{
+    "overall": {
+        "total_tasks": 100,
+        "successful_tasks": 91,
+        "incomplete_tasks": 3,
+        "failed_tasks": 6,
+        "success_rate": 91.0,
+        "incomplete_rate": 3.0,
+        "failure_rate": 6.0,
+        "average_response_time": 40.9,
+        "fastest_response_time": 3.21,
+        "slowest_response_time": 683.81,
+        "average_quality_score": 98.08,
+        "average_tokens_per_second": 14.06
+    },
+    "categories": {
+        "coding": {
+            "total_tasks": 25,
+            "successful_tasks": 25,
+            "failed_or_incomplete_tasks": 0,
+            "success_rate": 100.0,
+            "average_response_time": 37.3,
+            "average_quality_score": 96.2,
+            "average_tokens_per_second": 13.0
+        },
+        "reasoning": {
+            "total_tasks": 25,
+            "successful_tasks": 18,
+            "failed_or_incomplete_tasks": 7,
+            "success_rate": 72.0,
+            "average_response_time": 44.24,
+            "average_quality_score": 95.56,
+            "average_tokens_per_second": 17.02
+        },
+        "general": {
+            "total_tasks": 25,
+            "successful_tasks": 23,
+            "failed_or_incomplete_tasks": 2,
+            "success_rate": 92.0,
+            "average_response_time": 77.38,
+            "average_quality_score": 100,
+            "average_tokens_per_second": 14.57
+        },
+        "summarization": {
+            "total_tasks": 25,
+            "successful_tasks": 25,
+            "failed_or_incomplete_tasks": 0,
+            "success_rate": 100.0,
+            "average_response_time": 8.55,
+            "average_quality_score": 100,
+            "average_tokens_per_second": 12.54
+        }
+    },
+    "models": {
+        "llama3.2:3b": {
+            "total_tasks": 41,
+            "successful_tasks": 41,
+            "incomplete_tasks": 0,
+            "failed_tasks": 0,
+            "success_rate": 100.0,
+            "average_response_time": 52.47,
+            "average_quality_score": 97.93,
+            "average_tokens_per_second": 11.9,
+            "good_quality_responses": 40,
+            "average_quality_responses": 1,
+            "poor_quality_responses": 0
+        },
+        "qwen2.5-coder:3b": {
+            "total_tasks": 17,
+            "successful_tasks": 17,
+            "incomplete_tasks": 0,
+            "failed_tasks": 0,
+            "success_rate": 100.0,
+            "average_response_time": 40.28,
+            "average_quality_score": 96.47,
+            "average_tokens_per_second": 12.73,
+            "good_quality_responses": 15,
+            "average_quality_responses": 2,
+            "poor_quality_responses": 0
+        },
+        "deepseek-r1:1.5b": {
+            "total_tasks": 25,
+            "successful_tasks": 16,
+            "incomplete_tasks": 3,
+            "failed_tasks": 6,
+            "success_rate": 64.0,
+            "average_response_time": 46.91,
+            "average_quality_score": 98.12,
+            "average_tokens_per_second": 22.22,
+            "good_quality_responses": 16,
+            "average_quality_responses": 0,
+            "poor_quality_responses": 0
+        },
+        "qwen2.5:3b": {
+            "total_tasks": 17,
+            "successful_tasks": 17,
+            "incomplete_tasks": 0,
+            "failed_tasks": 0,
+            "success_rate": 100.0,
+            "average_response_time": 7.95,
+            "average_quality_score": 100,
+            "average_tokens_per_second": 12.93,
+            "good_quality_responses": 17,
+            "average_quality_responses": 0,
+            "poor_quality_responses": 0
+        }
+    }
+}

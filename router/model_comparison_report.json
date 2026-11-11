@@ -1,0 +1,237 @@
+{
+    "models": {
+        "llama3.2:3b": {
+            "total_tests": 100,
+            "successful": 100,
+            "incomplete": 0,
+            "failed": 0,
+            "success_rate": 100.0,
+            "incomplete_rate": 0.0,
+            "failure_rate": 0.0,
+            "average_response_time": 35.84,
+            "fastest_response_time": 5.28,
+            "slowest_response_time": 168.23,
+            "average_tokens_per_second": 13.21,
+            "average_generated_tokens": 382.87
+        },
+        "qwen2.5-coder:3b": {
+            "total_tests": 100,
+            "successful": 100,
+            "incomplete": 0,
+            "failed": 0,
+            "success_rate": 100.0,
+            "incomplete_rate": 0.0,
+            "failure_rate": 0.0,
+            "average_response_time": 28.5,
+            "fastest_response_time": 3.24,
+            "slowest_response_time": 85.45,
+            "average_tokens_per_second": 11.76,
+            "average_generated_tokens": 299.42
+        },
+        "qwen2.5:3b": {
+            "total_tests": 100,
+            "successful": 99,
+            "incomplete": 1,
+            "failed": 0,
+            "success_rate": 99.0,
+            "incomplete_rate": 1.0,
+            "failure_rate": 0.0,
+            "average_response_time": 52.24,
+            "fastest_response_time": 4.51,
+            "slowest_response_time": 767.06,
+            "average_tokens_per_second": 12.41,
+            "average_generated_tokens": 439.8
+        },
+        "deepseek-r1:1.5b": {
+            "total_tests": 100,
+            "successful": 89,
+            "incomplete": 4,
+            "failed": 7,
+            "success_rate": 89.0,
+            "incomplete_rate": 4.0,
+            "failure_rate": 7.0,
+            "average_response_time": 119.04,
+            "fastest_response_time": 6.21,
+            "slowest_response_time": 6456.97,
+            "average_tokens_per_second": 23.21,
+            "average_generated_tokens": 956.61
+        }
+    },
+    "categories": {
+        "coding": {
+            "llama3.2:3b": {
+                "total_tests": 25,
+                "successful": 25,
+                "success_rate": 100.0,
+                "average_response_time": 38.88
+            },
+            "qwen2.5-coder:3b": {
+                "total_tests": 25,
+                "successful": 25,
+                "success_rate": 100.0,
+                "average_response_time": 36.27
+            },
+            "qwen2.5:3b": {
+                "total_tests": 25,
+                "successful": 25,
+                "success_rate": 100.0,
+                "average_response_time": 54.34
+            },
+            "deepseek-r1:1.5b": {
+                "total_tests": 25,
+                "successful": 22,
+                "success_rate": 88.0,
+                "average_response_time": 366.34
+            }
+        },
+        "reasoning": {
+            "llama3.2:3b": {
+                "total_tests": 25,
+                "successful": 25,
+                "success_rate": 100.0,
+                "average_response_time": 43.73
+            },
+            "qwen2.5-coder:3b": {
+                "total_tests": 25,
+                "successful": 25,
+                "success_rate": 100.0,
+                "average_response_time": 42.98
+            },
+            "qwen2.5:3b": {
+                "total_tests": 25,
+                "successful": 25,
+                "success_rate": 100.0,
+                "average_response_time": 50.09
+            },
+            "deepseek-r1:1.5b": {
+                "total_tests": 25,
+                "successful": 19,
+                "success_rate": 76.0,
+                "average_response_time": 44.84
+            }
+        },
+        "general": {
+            "llama3.2:3b": {
+                "total_tests": 25,
+                "successful": 25,
+                "success_rate": 100.0,
+                "average_response_time": 52.96
+            },
+            "qwen2.5-coder:3b": {
+                "total_tests": 25,
+                "successful": 25,
+                "success_rate": 100.0,
+                "average_response_time": 28.88
+            },
+            "qwen2.5:3b": {
+                "total_tests": 25,
+                "successful": 24,
+                "success_rate": 96.0,
+                "average_response_time": 99.74
+            },
+            "deepseek-r1:1.5b": {
+                "total_tests": 25,
+                "successful": 23,
+                "success_rate": 92.0,
+                "average_response_time": 56.51
+            }
+        },
+        "summarization": {
+            "llama3.2:3b": {
+                "total_tests": 25,
+                "successful": 25,
+                "success_rate": 100.0,
+                "average_response_time": 7.8
+            },
+            "qwen2.5-coder:3b": {
+                "total_tests": 25,
+                "successful": 25,
+                "success_rate": 100.0,
+                "average_response_time": 5.88
+            },
+            "qwen2.5:3b": {
+                "total_tests": 25,
+                "successful": 25,
+                "success_rate": 100.0,
+                "average_response_time": 6.68
+            },
+            "deepseek-r1:1.5b": {
+                "total_tests": 25,
+                "successful": 25,
+                "success_rate": 100.0,
+                "average_response_time": 15.34
+            }
+        }
+    },
+    "quality": {
+        "llama3.2:3b": {
+            "evaluated_tasks": 41,
+            "average_quality_score": 97.93,
+            "good": 40,
+            "average": 1,
+            "poor": 0,
+            "source": "Router-selected evaluation results"
+        },
+        "qwen2.5-coder:3b": {
+            "evaluated_tasks": 17,
+            "average_quality_score": 96.47,
+            "good": 15,
+            "average": 2,
+            "poor": 0,
+            "source": "Router-selected evaluation results"
+        },
+        "deepseek-r1:1.5b": {
+            "evaluated_tasks": 16,
+            "average_quality_score": 98.12,
+            "good": 16,
+            "average": 0,
+            "poor": 0,
+            "source": "Router-selected evaluation results"
+        },
+        "qwen2.5:3b": {
+            "evaluated_tasks": 17,
+            "average_quality_score": 100,
+            "good": 17,
+            "average": 0,
+            "poor": 0,
+            "source": "Router-selected evaluation results"
+        }
+    },
+    "routing": {
+        "total_tasks": 100,
+        "labeled_tasks": 100,
+        "correct_routes": 100,
+        "incorrect_routes": 0,
+        "routing_accuracy": 100.0
+    },
+    "rankings": [
+        {
+            "model": "qwen2.5-coder:3b",
+            "success_rate": 100.0,
+            "average_response_time": 28.5,
+            "average_tokens_per_second": 11.76,
+            "rank": 1
+        },
+        {
+            "model": "llama3.2:3b",
+            "success_rate": 100.0,
+            "average_response_time": 35.84,
+            "average_tokens_per_second": 13.21,
+            "rank": 2
+        },
+        {
+            "model": "qwen2.5:3b",
+            "success_rate": 99.0,
+            "average_response_time": 52.24,
+            "average_tokens_per_second": 12.41,
+            "rank": 3
+        },
+        {
+            "model": "deepseek-r1:1.5b",
+            "success_rate": 89.0,
+            "average_response_time": 119.04,
+            "average_tokens_per_second": 23.21,
+            "rank": 4
+        }
+    ]
+}

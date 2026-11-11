@@ -1,0 +1,2372 @@
+﻿task_id,task,category,difficulty,expected_model,model,response,response_time,status,done_reason,generated_tokens,prompt_tokens,tokens_per_second,quality_score,quality_status,quality_issues,evaluation_type,evaluation_method,evaluation_criteria,error
+1,Explain Python variables with an example.,coding,easy,llama3.2:3b,llama3.2:3b,"# Python Variables
+
+In Python, a variable is a name given to a value. Variables are used to store and manipulate data in a program.
+
+## Declaring Variables
+
+In Python, you don't need to declare variables before using them. You can assign a value to a variable using the assignment operator (=).
+
+### Example:
+
+```python
+# Declare a variable and assign it a value
+name = ""John Doe""
+
+# Print the value of the variable
+print(name)
+```
+
+In this example, we declare a variable `name` and assign it the value `""John Doe""`. We can then print the value of the variable using the `print()` function.
+
+## Variable Types
+
+Python has several built-in data types, including:
+
+* Integers (int)
+* Floats (float)
+* Strings (str)
+* Boolean (bool)
+* Lists (list)
+* Tuples (tuple)
+
+### Example:
+
+```python
+# Declare a variable and assign it an integer value
+age = 25
+
+# Declare a variable and assign it a float value
+height = 1.75
+
+# Declare a variable and assign it a string value
+name = ""John Doe""
+
+# Print the values of the variables
+print(age)
+print(height)
+print(name)
+```
+
+In this example, we declare three variables with different data types and assign them values. We can then print the values of the variables using the `print()` function.
+
+## Variable Names
+
+In Python, variable names can contain letters, digits, and underscores. They cannot start with a digit.
+
+### Example:
+
+```python
+# Declare a variable with a valid name
+first_name = ""John Doe""
+
+# Declare a variable with an invalid name
+# 123_name = ""John Doe""  # Error: invalid character
+```
+
+In this example, we declare two variables with valid names. We cannot use a digit as the first character of a variable name.
+
+## Variable Scope
+
+In Python, variables have a scope that determines their visibility and accessibility. The scope of a variable is the region of the program where the variable is defined.
+
+### Example:
+
+```python
+# Declare a variable with global scope
+global_variable = ""Global variable""
+
+# Declare a function
+def my_function():
+    # Declare a variable with local scope
+    local_variable = ""Local variable""
+
+    # Print the values of the variables
+    print(""Global variable:"", global_variable)
+    print(""Local variable:"", local_variable)
+
+# Call the function
+my_function()
+
+# Print the value of the global variable
+print(""Global variable:"", global_variable)
+```
+
+In this example, we declare a variable with global scope and a variable with local scope inside a function. We can access the global variable from anywhere in the program, but we cannot access the local variable outside the function.",47.81,success,stop,571,33,12.64,100,good,No issues detected by heuristic checks,code_quality,heuristic,Correctness of the proposed solution; Python syntax and code structure; Relevance to the programming task; Explanation of the implementation; Handling of relevant edge cases,
+2,Write a Python program to check whether a number is prime.,coding,easy,llama3.2:3b,llama3.2:3b,"def is_prime(n):
+    """"""
+    Checks if a number is prime.
+
+    Args:
+        n (int): The number to check.
+
+    Returns:
+        bool: True if the number is prime, False otherwise.
+    """"""
+    if n <= 1:
+        return False
+    for i in range(2, int(n ** 0.5) + 1):
+        if n % i == 0:
+            return False
+    return True
+
+# Example usage:
+num = int(input(""Enter a number: ""))
+if is_prime(num):
+    print(num, ""is a prime number."")
+else:
+    print(num, ""is not a prime number."")",12.44,success,stop,137,37,13.88,100,good,No issues detected by heuristic checks,code_quality,heuristic,Correctness of the proposed solution; Python syntax and code structure; Relevance to the programming task; Explanation of the implementation; Handling of relevant edge cases,
+3,Write a Python program to reverse a string.,coding,easy,llama3.2:3b,llama3.2:3b,"def reverse_string(input_string):
+    """"""
+    This function takes a string as input and returns the reversed string.
+
+    Args:
+        input_string (str): The string to be reversed.
+
+    Returns:
+        str: The reversed string.
+    """"""
+    return input_string[::-1]
+
+# Example usage:
+input_str = ""Hello, World!""
+print(""Original string: "", input_str)
+print(""Reversed string: "", reverse_string(input_str))",8.3,success,stop,90,34,14.83,100,good,No issues detected by heuristic checks,code_quality,heuristic,Correctness of the proposed solution; Python syntax and code structure; Relevance to the programming task; Explanation of the implementation; Handling of relevant edge cases,
+4,"Explain Python lists, tuples, sets and dictionaries.",coding,easy,llama3.2:3b,llama3.2:3b,"Python provides four fundamental data structures: lists, tuples, sets, and dictionaries. Each has its own strengths and use cases.
+
+### Lists
+
+Lists are ordered collections of items that can be of any data type, including strings, integers, floats, and other lists. They are denoted by square brackets `[]` and are mutable, meaning they can be modified after creation.
+
+```python
+# Creating a list
+my_list = [1, 2, 3, 4, 5]
+
+# Accessing elements
+print(my_list[0])  # Output: 1
+
+# Modifying elements
+my_list[0] = 10
+print(my_list)  # Output: [10, 2, 3, 4, 5]
+
+# Appending elements
+my_list.append(6)
+print(my_list)  # Output: [10, 2, 3, 4, 5, 6]
+
+# Removing elements
+my_list.remove(2)
+print(my_list)  # Output: [10, 3, 4, 5, 6]
+```
+
+### Tuples
+
+Tuples are ordered, immutable collections of items. They are denoted by parentheses `()` and are similar to lists, but cannot be modified after creation.
+
+```python
+# Creating a tuple
+my_tuple = (1, 2, 3, 4, 5)
+
+# Accessing elements
+print(my_tuple[0])  # Output: 1
+
+# Trying to modify a tuple will raise an error
+try:
+    my_tuple[0] = 10
+except TypeError as e:
+    print(e)  # Output: 'tuple' object does not support item assignment
+```
+
+### Sets
+
+Sets are unordered collections of unique items. They are denoted by the `set()` function and are mutable, meaning they can be modified after creation.
+
+```python
+# Creating a set
+my_set = {1, 2, 3, 4, 5}
+
+# Adding elements
+my_set.add(6)
+print(my_set)  # Output: {1, 2, 3, 4, 5, 6}
+
+# Removing elements
+my_set.remove(2)
+print(my_set)  # Output: {1, 3, 4, 5, 6}
+
+# Checking membership
+print(3 in my_set)  # Output: True
+```
+
+### Dictionaries
+
+Dictionaries are unordered collections of key-value pairs. They are denoted by the `dict()` function and are mutable, meaning they can be modified after creation.
+
+```python
+# Creating a dictionary
+my_dict = {""name"": ""John"", ""age"": 30}
+
+# Accessing values
+print(my_dict[""name""])  # Output: John
+
+# Modifying values
+my_dict[""age""] = 31
+print(my_dict)  # Output: {'name': 'John', 'age': 31}
+
+# Adding new key-value pairs
+my_dict[""city""] = ""New York""
+print(my_dict)  # Output: {'name': 'John', 'age': 31, 'city': 'New York'}
+
+# Removing key-value pairs
+del my_dict[""age""]
+print(my_dict)  # Output: {'name': 'John', 'city': 'New York'}
+```
+
+In summary:
+
+* Lists are ordered, mutable collections of items.
+* Tuples are ordered, immutable collections of items.
+* Sets are unordered, mutable collections of unique items.
+* Dictionaries are unordered, mutable collections of key-value pairs.",57.58,success,stop,740,36,13.43,100,good,No issues detected by heuristic checks,code_quality,heuristic,Correctness of the proposed solution; Python syntax and code structure; Relevance to the programming task; Explanation of the implementation; Handling of relevant edge cases,
+5,Write a function to calculate the factorial of a number.,coding,easy,llama3.2:3b,llama3.2:3b,"def factorial(n):
+    """"""
+    Calculate the factorial of a number.
+
+    Args:
+        n (int): The number to calculate the factorial of.
+
+    Returns:
+        int: The factorial of n.
+
+    Raises:
+        ValueError: If n is a negative number.
+    """"""
+    if n < 0:
+        raise ValueError(""Factorial is not defined for negative numbers"")
+    elif n == 0 or n == 1:
+        return 1
+    else:
+        return n * factorial(n-1)",9.84,success,stop,106,36,14.52,100,good,No issues detected by heuristic checks,code_quality,heuristic,Correctness of the proposed solution; Python syntax and code structure; Relevance to the programming task; Explanation of the implementation; Handling of relevant edge cases,
+6,Explain the difference between == and is in Python.,coding,easy,llama3.2:3b,llama3.2:3b,"In Python, `==` and `is` are two distinct operators that are often confused with each other. Here's a brief explanation of their differences:
+
+**Equality Operator (`==`)**
+
+The `==` operator checks whether the values of two variables are equal. It returns `True` if the values are equal and `False` otherwise. This operator is used to compare the values of variables, not their identities.
+
+Example:
+```python
+a = 5
+b = 5
+print(a == b)  # Output: True
+```
+In this example, `a` and `b` have the same value, but they are not the same object in memory. If you use `is` instead of `==`, the result would be `False`.
+
+**Identity Operator (`is`)**
+
+The `is` operator checks whether two variables refer to the same object in memory. It returns `True` if the variables are the same object and `False` otherwise. This operator is used to compare the identities of variables, not their values.
+
+Example:
+```python
+a = 5
+b = 5
+print(a is b)  # Output: False
+```
+In this example, `a` and `b` have the same value, but they are not the same object in memory. If you use `==` instead of `is`, the result would be `True`.
+
+When to use each:
+
+* Use `==` to compare the values of variables.
+* Use `is` to compare the identities of variables.
+
+Here's an example that illustrates the difference:
+```python
+a = [1, 2, 3]
+b = [1, 2, 3]
+c = a
+
+print(a == b)  # Output: True
+print(a is b)  # Output: False
+print(a is c)  # Output: True
+```
+In this example, `a` and `b` have the same value, but they are not the same object in memory. However, `a` and `c` are the same object in memory, so `a is c` returns `True`.",35.33,success,stop,442,36,13.47,100,good,No issues detected by heuristic checks,code_quality,heuristic,Correctness of the proposed solution; Python syntax and code structure; Relevance to the programming task; Explanation of the implementation; Handling of relevant edge cases,
+7,Write a Python program to find the largest element in a list.,coding,easy,llama3.2:3b,llama3.2:3b,"def find_largest_element(lst):
+    """"""
+    This function finds the largest element in a list.
+
+    Args:
+        lst (list): A list of numbers.
+
+    Returns:
+        The largest element in the list.
+    """"""
+    if not lst:
+        return None  # Return None if the list is empty
+    largest = lst[0]
+    for num in lst[1:]:
+        if num > largest:
+            largest = num
+    return largest
+
+# Example usage:
+numbers = [4, 2, 9, 6, 5, 1, 8, 3, 7]
+print(find_largest_element(numbers))  # Output: 9",12.39,success,stop,141,38,14.5,100,good,No issues detected by heuristic checks,code_quality,heuristic,Correctness of the proposed solution; Python syntax and code structure; Relevance to the programming task; Explanation of the implementation; Handling of relevant edge cases,
+8,Explain Python loops with examples.,coding,easy,llama3.2:3b,llama3.2:3b,"Python Loops
+================
+
+Python provides three types of loops: For Loop, While Loop, and Loop with Break and Continue statements.
+
+### 1. For Loop
+
+A for loop is used to iterate over a sequence (such as a list, tuple, or string) and execute a block of code for each item in the sequence.
+
+**Example:**
+
+```python
+# Create a list of numbers
+numbers = [1, 2, 3, 4, 5]
+
+# Use a for loop to print each number in the list
+for num in numbers:
+    print(num)
+```
+
+Output:
+
+```
+1
+2
+3
+4
+5
+```
+
+### 2. While Loop
+
+A while loop is used to execute a block of code as long as a certain condition is true.
+
+**Example:**
+
+```python
+# Initialize a variable to 0
+i = 0
+
+# Use a while loop to print numbers from 0 to 4
+while i < 5:
+    print(i)
+    i += 1
+```
+
+Output:
+
+```
+0
+1
+2
+3
+4
+```
+
+### 3. Loop with Break and Continue Statements
+
+A break statement is used to exit a loop prematurely, while a continue statement skips the current iteration and moves on to the next one.
+
+**Example:**
+
+```python
+# Create a list of numbers
+numbers = [1, 2, 3, 4, 5]
+
+# Use a for loop with a break statement to print only odd numbers
+for num in numbers:
+    if num % 2 == 0:
+        continue
+    print(num)
+```
+
+Output:
+
+```
+1
+3
+5
+```
+
+**Example:**
+
+```python
+# Create a list of numbers
+numbers = [1, 2, 3, 4, 5]
+
+# Use a for loop with a continue statement to skip even numbers
+for num in numbers:
+    if num % 2 == 0:
+        continue
+    print(num)
+```
+
+Output:
+
+```
+1
+3
+5
+```
+
+### 4. Loop with Range Function
+
+The range function generates a sequence of numbers starting from a specified start value and ending at a specified end value.
+
+**Example:**
+
+```python
+# Use a for loop with the range function to print numbers from 0 to 4
+for i in range(5):
+    print(i)
+```
+
+Output:
+
+```
+0
+1
+2
+3
+4
+```
+
+### 5. Loop with Enumerate Function
+
+The enumerate function returns a tuple containing a count (from start which defaults to 0) and the values obtained from iterating over a sequence.
+
+**Example:**
+
+```python
+# Create a list of numbers
+numbers = [1, 2, 3, 4, 5]
+
+# Use a for loop with the enumerate function to print numbers and their indices
+for i, num in enumerate(numbers):
+    print(f""Index: {i}, Number: {num}"")
+```
+
+Output:
+
+```
+Index: 0, Number: 1
+Index: 1, Number: 2
+Index: 2, Number: 3
+Index: 3, Number: 4
+Index: 4, Number: 5
+```",63.88,success,stop,687,32,11.2,65,average,1 code block(s) contain invalid Python syntax,code_quality,heuristic,Correctness of the proposed solution; Python syntax and code structure; Relevance to the programming task; Explanation of the implementation; Handling of relevant edge cases,
+9,Write a program to remove duplicate elements from a list.,coding,medium,qwen2.5-coder:3b,qwen2.5-coder:3b,"Certainly! Below is a simple Python program that removes duplicate elements from a list using a set:
+
+```python
+def remove_duplicates(input_list):
+    # Convert the list to a set to remove duplicates
+    unique_set = set(input_list)
+    # Convert the set back to a list
+    unique_list = list(unique_set)
+    return unique_list
+
+# Example usage
+original_list = [1, 2, 2, 3, 4, 4, 5]
+unique_list = remove_duplicates(original_list)
+print(""Original list:"", original_list)
+print(""List after removing duplicates:"", unique_list)
+```
+
+### Explanation:
+- **Set Conversion**: By converting the list to a set, all duplicate elements are automatically removed because sets do not allow duplicate values.
+- **Conversion Back to List**: The set is then converted back to a list to maintain the list data structure.
+- **Example Usage**: The program demonstrates how to use the `remove_duplicates` function with an example list.
+
+This method is efficient and works well for lists with a reasonable number of elements. If you need to maintain the order of elements, you can use a different approach:
+
+```python
+def remove_duplicates_ordered(input_list):
+    seen = set()
+    unique_list = []
+    for item in input_list:
+        if item not in seen:
+            unique_list.append(item)
+            seen.add(item)
+    return unique_list
+
+# Example usage
+original_list = [1, 2, 2, 3, 4, 4, 5]
+unique_list = remove_duplicates_ordered(original_list)
+print(""Original list:"", original_list)
+print(""List after removing duplicates:"", unique_list)
+```
+
+### Explanation:
+- **Tracking Seen Items**: A set `seen` is used to keep track of items that have already been encountered.
+- **Appending Unique Items**: For each item in the list, if it has not been seen before, it is added to the `unique_list` and marked as seen in the `seen` set.
+- **Order Preservation**: This approach maintains the order of first appearance of each element in the list.",43.75,success,stop,431,40,12.46,100,good,No issues detected by heuristic checks,code_quality,heuristic,Correctness of the proposed solution; Python syntax and code structure; Relevance to the programming task; Explanation of the implementation; Handling of relevant edge cases,
+10,Implement binary search in Python.,coding,medium,qwen2.5-coder:3b,qwen2.5-coder:3b,"Certainly! Binary search is an efficient algorithm for finding an item from a sorted list of items. It works by repeatedly dividing in half the portion of the list that could contain the item, until you've narrowed down the possible locations to just one.
+
+Here's a simple implementation of binary search in Python:
+
+```python
+def binary_search(arr, target):
+    left, right = 0, len(arr) - 1
+
+    while left <= right:
+        mid = left + (right - left) // 2  # Calculate the middle index
+
+        # Check if the target is present at mid
+        if arr[mid] == target:
+            return mid
+        # If target is greater, ignore the left half
+        elif arr[mid] < target:
+            left = mid + 1
+        # If target is smaller, ignore the right half
+        else:
+            right = mid - 1
+
+    # Target is not present in the array
+    return -1
+
+# Example usage:
+sorted_array = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+target_value = 7
+
+result = binary_search(sorted_array, target_value)
+
+if result != -1:
+    print(f""Element found at index {result}"")
+else:
+    print(""Element not found in the array"")
+```
+
+### Explanation:
+- **Initialization**: We start with two pointers, `left` and `right`, which represent the current search range. Initially, `left` is set to 0 and `right` is set to the last index of the array.
+- **Loop**: We continue the loop as long as `left` is less than or equal to `right`.
+- **Middle Calculation**: We calculate the middle index `mid` using the formula `left + (right - left) // 2` to avoid potential overflow.
+- **Comparison**:
+  - If the element at `mid` is equal to the target, we return `mid`.
+  - If the element at `mid` is less than the target, we move the `left` pointer to `mid + 1` to search in the right half.
+  - If the element at `mid` is greater than the target, we move the `right` pointer to `mid - 1` to search in the left half.
+- **Not Found**: If the loop exits without finding the target, we return `-1` to indicate that the target is not present in the array.
+
+This implementation assumes that the input array is sorted. If the array is not sorted, you would need to sort it first before performing the binary search.",45.61,success,stop,551,35,12.78,100,good,No issues detected by heuristic checks,code_quality,heuristic,Correctness of the proposed solution; Python syntax and code structure; Relevance to the programming task; Explanation of the implementation; Handling of relevant edge cases,
+11,Explain object-oriented programming in Python.,coding,medium,qwen2.5-coder:3b,qwen2.5-coder:3b,"Object-oriented programming (OOP) is a programming paradigm that organizes code into objects, which are instances of classes. OOP is based on the concept of ""objects"" that have properties and methods. Here are some key concepts in OOP:
+
+1. **Classes**: A class is a blueprint for creating objects. It defines a set of attributes and methods that the objects created from the class will have. For example, a class might represent a ""Car"" with attributes like ""make"", ""model"", and ""color"", and methods like ""start_engine"" and ""stop_engine"".
+
+2. **Objects**: An object is an instance of a class. It is a specific realization of a class with its own unique values for the attributes. For example, an object of the ""Car"" class might have a make of ""Toyota"", a model of ""Corolla"", and a color of ""blue"".
+
+3. **Encapsulation**: Encapsulation is the bundling of data and methods that operate on that data into a single unit called a class. This helps to protect the data from being accessed or modified directly from outside the class.
+
+4. **Inheritance**: Inheritance is the ability of a class to inherit properties and methods from another class. This allows for code reuse and the creation of a hierarchy of classes.
+
+5. **Polymorphism**: Polymorphism is the ability of an object to take on many forms. This allows for flexibility in the use of objects and can be achieved through method overriding and method overloading.
+
+Here is a simple example of OOP in Python:
+
+```python
+# Define a class called Car
+class Car:
+    def __init__(self, make, model, color):
+        self.make = make
+        self.model = model
+        self.color = color
+
+    def start_engine(self):
+        print(f""{self.make} {self.model} engine started."")
+
+    def stop_engine(self):
+        print(f""{self.make} {self.model} engine stopped."")
+
+# Create an object of the Car class
+my_car = Car(""Toyota"", ""Corolla"", ""blue"")
+
+# Use the methods of the Car object
+my_car.start_engine()
+my_car.stop_engine()
+```
+
+In this example, the `Car` class has three attributes: `make`, `model`, and `color`. It also has two methods: `start_engine` and `stop_engine`. The `__init__` method is a special method that is called when a new object is created. The `my_car` object is an instance of the `Car` class, and it has its own values for the attributes. The `start_engine` and `stop_engine` methods are called on the `my_car` object to demonstrate the use of the methods.",47.68,success,stop,561,37,12.42,100,good,No issues detected by heuristic checks,code_quality,heuristic,Correctness of the proposed solution; Python syntax and code structure; Relevance to the programming task; Explanation of the implementation; Handling of relevant edge cases,
+12,Create a Python class for managing student records.,coding,medium,qwen2.5-coder:3b,qwen2.5-coder:3b,"Here's a Python class for managing student records, which includes methods for adding, removing, and retrieving student information:
+
+```python
+class StudentRecordManager:
+    def __init__(self):
+        # Initialize an empty dictionary to store student records
+        self.students = {}
+
+    def add_student(self, student_id, name, age, grade):
+        # Add a new student to the dictionary
+        self.students[student_id] = {
+            'name': name,
+            'age': age,
+            'grade': grade
+        }
+
+    def remove_student(self, student_id):
+        # Remove a student from the dictionary
+        if student_id in self.students:
+            del self.students[student_id]
+        else:
+            print(f""Student with ID {student_id} not found."")
+
+    def get_student(self, student_id):
+        # Retrieve a student's information
+        if student_id in self.students:
+            return self.students[student_id]
+        else:
+            print(f""Student with ID {student_id} not found."")
+            return None
+
+    def list_students(self):
+        # List all students in the dictionary
+        return list(self.students.values())
+
+    def update_student(self, student_id, name=None, age=None, grade=None):
+        # Update a student's information
+        if student_id in self.students:
+            if name:
+                self.students[student_id]['name'] = name
+            if age:
+                self.students[student_id]['age'] = age
+            if grade:
+                self.students[student_id]['grade'] = grade
+        else:
+            print(f""Student with ID {student_id} not found."")
+```
+
+### Explanation:
+
+- **Initialization**: The `__init__` method initializes an empty dictionary `self.students` to store student records. Each student is represented by a dictionary with keys for `name`, `age`, and `grade`.
+
+- **Adding a Student**: The `add_student` method adds a new student to the dictionary. It takes `student_id`, `name`, `age`, and `grade` as parameters and stores them in the dictionary.
+
+- **Removing a Student**: The `remove_student` method removes a student from the dictionary if the student ID exists. If the student ID is not found, it prints a message.
+
+- **Retrieving a Student**: The `get_student` method retrieves the information of a student by their ID. If the student ID is not found, it prints a message and returns `None`.
+
+- **Listing Students**: The `list_students` method returns a list of all students in the dictionary.
+
+- **Updating a Student**: The `update_student` method updates the information of a student. It allows updating the `name`, `age`, or `grade` of a student. If the student ID is not found, it prints a message.
+
+This class provides a simple and efficient way to manage student records using a dictionary in Python.",52.8,success,stop,595,38,11.83,100,good,No issues detected by heuristic checks,code_quality,heuristic,Correctness of the proposed solution; Python syntax and code structure; Relevance to the programming task; Explanation of the implementation; Handling of relevant edge cases,
+13,Write a program to count word frequencies in a sentence.,coding,medium,qwen2.5-coder:3b,qwen2.5-coder:3b,"Certainly! Below is a simple Python program that counts the frequency of each word in a given sentence. This program uses a dictionary to store the word counts.
+
+```python
+def count_word_frequencies(sentence):
+    # Convert the sentence to lowercase to ensure case-insensitivity
+    sentence = sentence.lower()
+    
+    # Split the sentence into words
+    words = sentence.split()
+    
+    # Create a dictionary to store word frequencies
+    word_frequencies = {}
+    
+    # Count the frequency of each word
+    for word in words:
+        if word in word_frequencies:
+            word_frequencies[word] += 1
+        else:
+            word_frequencies[word] = 1
+    
+    return word_frequencies
+
+# Example usage
+sentence = ""This is a test sentence. This sentence is just a test.""
+frequencies = count_word_frequencies(sentence)
+
+# Print the word frequencies
+for word, frequency in frequencies.items():
+    print(f""'{word}': {frequency}"")
+```
+
+### How it works:
+1. **Lowercasing**: The sentence is converted to lowercase to ensure that the word counting is case-insensitive.
+2. **Splitting**: The sentence is split into individual words using the `split()` method.
+3. **Counting**: A dictionary is used to count the occurrences of each word. If a word is already in the dictionary, its count is incremented; otherwise, it is added to the dictionary with a count of 1.
+4. **Output**: The program prints each word along with its frequency.
+
+You can modify the `sentence` variable to test with different inputs.",27.72,success,stop,327,40,12.96,100,good,No issues detected by heuristic checks,code_quality,heuristic,Correctness of the proposed solution; Python syntax and code structure; Relevance to the programming task; Explanation of the implementation; Handling of relevant edge cases,
+14,Explain exception handling with an example.,coding,medium,qwen2.5-coder:3b,qwen2.5-coder:3b,"Exception handling is a crucial part of programming that helps manage errors and unexpected situations gracefully. It allows the program to continue running even if something goes wrong, instead of crashing. In Python, exception handling is done using the `try`, `except`, `else`, and `finally` blocks.
+
+Here's an example to illustrate exception handling in Python:
+
+```python
+def divide_numbers(a, b):
+    try:
+        # Attempt to divide a by b
+        result = a / b
+    except ZeroDivisionError:
+        # Handle the case where b is zero
+        print(""Error: Division by zero is not allowed."")
+        result = None
+    else:
+        # Execute this block if no exception occurred
+        print(""The result of division is:"", result)
+    finally:
+        # This block is executed regardless of whether an exception occurred or not
+        print(""Execution of division operation is complete."")
+
+# Example usage
+divide_numbers(10, 2)  # This will print the result of division
+divide_numbers(10, 0)  # This will print an error message and set result to None
+```
+
+In this example, the `divide_numbers` function attempts to divide two numbers. The `try` block contains the code that might raise an exception. If a `ZeroDivisionError` occurs (which happens when `b` is zero), the `except` block catches the exception and prints an error message. The `else` block is executed if no exception occurs, and the result of the division is printed. The `finally` block is executed at the end of the function, regardless of whether an exception was raised or not. This ensures that the function always completes its execution, even if an error occurs.",30.3,success,stop,355,37,12.81,100,good,No issues detected by heuristic checks,code_quality,heuristic,Correctness of the proposed solution; Python syntax and code structure; Relevance to the programming task; Explanation of the implementation; Handling of relevant edge cases,
+15,Implement bubble sort in Python.,coding,medium,qwen2.5-coder:3b,qwen2.5-coder:3b,"Certainly! Bubble sort is a simple sorting algorithm that repeatedly steps through the list, compares adjacent elements, and swaps them if they are in the wrong order. The pass through the list is repeated until the list is sorted. Here's how you can implement bubble sort in Python:
+
+```python
+def bubble_sort(arr):
+    n = len(arr)
+    # Traverse through all array elements
+    for i in range(n):
+        # Last i elements are already in place
+        for j in range(0, n-i-1):
+            # Traverse the array from 0 to n-i-1
+            # Swap if the element found is greater than the next element
+            if arr[j] > arr[j+1]:
+                arr[j], arr[j+1] = arr[j+1], arr[j]
+
+# Example usage:
+arr = [64, 34, 25, 12, 22, 11, 90]
+bubble_sort(arr)
+print(""Sorted array is:"", arr)
+```
+
+### Explanation:
+- The outer loop runs `n` times, where `n` is the number of elements in the list.
+- The inner loop runs from the start of the list to `n-i-1`, where `i` is the current pass number. This is because the last `i` elements are already sorted after each pass.
+- Inside the inner loop, the algorithm compares each pair of adjacent elements. If the current element is greater than the next element, they are swapped.
+- This process is repeated until the list is sorted.
+
+Bubble sort has a time complexity of \(O(n^2)\) in the average and worst cases, making it inefficient on large lists. However, it is simple to understand and implement.",30.35,success,stop,362,35,13.01,100,good,No issues detected by heuristic checks,code_quality,heuristic,Correctness of the proposed solution; Python syntax and code structure; Relevance to the programming task; Explanation of the implementation; Handling of relevant edge cases,
+16,Write a Python program to merge two sorted lists.,coding,medium,qwen2.5-coder:3b,qwen2.5-coder:3b,"Here's a Python function to merge two sorted lists:
+
+```python
+def merge_sorted_lists(list1, list2):
+    # Initialize pointers for both lists
+    i, j = 0, 0
+    # Initialize an empty list to store the merged result
+    merged_list = []
+    
+    # Traverse both lists and append the smaller element to the merged list
+    while i < len(list1) and j < len(list2):
+        if list1[i] < list2[j]:
+            merged_list.append(list1[i])
+            i += 1
+        else:
+            merged_list.append(list2[j])
+            j += 1
+    
+    # If there are remaining elements in list1, append them to the merged list
+    while i < len(list1):
+        merged_list.append(list1[i])
+        i += 1
+    
+    # If there are remaining elements in list2, append them to the merged list
+    while j < len(list2):
+        merged_list.append(list2[j])
+        j += 1
+    
+    return merged_list
+```
+
+### Explanation:
+
+1. **Initialization**: 
+   - `i` and `j` are pointers for `list1` and `list2`, respectively.
+   - `merged_list` is an empty list that will store the merged result.
+
+2. **Merging Process**:
+   - The function uses a while loop to iterate through both lists as long as there are elements left in both.
+   - It compares the current elements of `list1` and `list2` and appends the smaller one to `merged_list`.
+   - The pointer of the list from which the element was taken is incremented.
+
+3. **Appending Remaining Elements**:
+   - After the main loop, there might be remaining elements in either `list1` or `list2`.
+   - The function appends any remaining elements from `list1` and `list2` to `merged_list`.
+
+4. **Return the Result**:
+   - The function returns the `merged_list`, which now contains all elements from both input lists in sorted order.
+
+This approach ensures that the merged list is sorted and efficiently combines the two input lists.",38.36,success,stop,448,39,12.51,100,good,No issues detected by heuristic checks,code_quality,heuristic,Correctness of the proposed solution; Python syntax and code structure; Relevance to the programming task; Explanation of the implementation; Handling of relevant edge cases,
+17,Explain decorators and generators in Python.,coding,medium,qwen2.5-coder:3b,qwen2.5-coder:3b,Can you explain decorators and generators in Python with examples?,3.21,success,stop,12,37,16.94,70,average,Limited explanation; No recognizable Python code example found,code_quality,heuristic,Correctness of the proposed solution; Python syntax and code structure; Relevance to the programming task; Explanation of the implementation; Handling of relevant edge cases,
+18,Implement a stack using Python lists.,coding,hard,qwen2.5-coder:3b,qwen2.5-coder:3b,"Here's a simple implementation of a stack using Python lists:
+
+```python
+class Stack:
+    def __init__(self):
+        # Initialize an empty list to store stack elements
+        self.items = []
+
+    def is_empty(self):
+        # Check if the stack is empty
+        return len(self.items) == 0
+
+    def push(self, item):
+        # Add an item to the top of the stack
+        self.items.append(item)
+
+    def pop(self):
+        # Remove and return the item from the top of the stack
+        if self.is_empty():
+            raise IndexError(""pop from empty stack"")
+        return self.items.pop()
+
+    def peek(self):
+        # Return the item at the top of the stack without removing it
+        if self.is_empty():
+            raise IndexError(""peek from empty stack"")
+        return self.items[-1]
+
+    def size(self):
+        # Return the number of items in the stack
+        return len(self.items)
+
+    def __str__(self):
+        # Return a string representation of the stack
+        return str(self.items)
+
+# Example usage
+stack = Stack()
+stack.push(1)
+stack.push(2)
+stack.push(3)
+print(stack)  # Output: [1, 2, 3]
+print(stack.pop())  # Output: 3
+print(stack.peek())  # Output: 2
+print(stack.size())  # Output: 2
+```
+
+### Explanation:
+
+- **Initialization**: The `__init__` method initializes an empty list `items` to store the stack elements.
+- **isEmpty**: This method checks if the stack is empty by returning `True` if the list is empty and `False` otherwise.
+- **push**: This method adds an item to the end of the list, simulating the top of the stack.
+- **pop**: This method removes and returns the last item from the list, which is the top of the stack. It raises an `IndexError` if the stack is empty.
+- **peek**: This method returns the last item from the list without removing it, also raising an `IndexError` if the stack is empty.
+- **size**: This method returns the number of items currently in the stack.
+- **__str__**: This method provides a string representation of the stack, which is useful for debugging and printing.
+
+This implementation is a basic stack and can be used for various applications where a LIFO (Last In, First Out) data structure is needed.",42.45,success,stop,508,36,12.71,100,good,No issues detected by heuristic checks,code_quality,heuristic,Correctness of the proposed solution; Python syntax and code structure; Relevance to the programming task; Explanation of the implementation; Handling of relevant edge cases,
+19,Write a program to detect a palindrome string.,coding,hard,qwen2.5-coder:3b,qwen2.5-coder:3b,"Certainly! A palindrome is a string that reads the same forward and backward. Below is a simple Python program to detect if a given string is a palindrome:
+
+```python
+def is_palindrome(s):
+    # Remove any non-alphanumeric characters and convert to lowercase
+    cleaned_string = ''.join(char.lower() for char in s if char.isalnum())
+    
+    # Check if the cleaned string is equal to its reverse
+    return cleaned_string == cleaned_string[::-1]
+
+# Example usage
+input_string = input(""Enter a string: "")
+if is_palindrome(input_string):
+    print(f'""{input_string}"" is a palindrome.')
+else:
+    print(f'""{input_string}"" is not a palindrome.')
+```
+
+### Explanation:
+1. **Cleaning the String**: The program first removes any non-alphanumeric characters and converts the string to lowercase to ensure the palindrome check is case-insensitive and ignores spaces and punctuation.
+
+2. **Checking for Palindrome**: It then checks if the cleaned string is equal to its reverse. The slicing operation `cleaned_string[::-1]` reverses the string.
+
+3. **User Input**: The program prompts the user to enter a string and then checks if it is a palindrome using the `is_palindrome` function.
+
+You can run this program in any Python environment. It will output whether the input string is a palindrome or not.",23.7,success,stop,278,38,13.12,100,good,No issues detected by heuristic checks,code_quality,heuristic,Correctness of the proposed solution; Python syntax and code structure; Relevance to the programming task; Explanation of the implementation; Handling of relevant edge cases,
+20,Implement a linked list in Python.,coding,hard,qwen2.5-coder:3b,qwen2.5-coder:3b,"Here's a simple implementation of a singly linked list in Python:
+
+```python
+class Node:
+    def __init__(self, data):
+        self.data = data
+        self.next = None
+
+class LinkedList:
+    def __init__(self):
+        self.head = None
+
+    def append(self, data):
+        new_node = Node(data)
+        if not self.head:
+            self.head = new_node
+        else:
+            current = self.head
+            while current.next:
+                current = current.next
+            current.next = new_node
+
+    def prepend(self, data):
+        new_node = Node(data)
+        new_node.next = self.head
+        self.head = new_node
+
+    def delete(self, data):
+        if not self.head:
+            return
+        if self.head.data == data:
+            self.head = self.head.next
+            return
+        current = self.head
+        while current.next and current.next.data != data:
+            current = current.next
+        if current.next:
+            current.next = current.next.next
+
+    def display(self):
+        current = self.head
+        while current:
+            print(current.data, end="" -> "")
+            current = current.next
+        print(""None"")
+
+# Example usage:
+ll = LinkedList()
+ll.append(1)
+ll.append(2)
+ll.append(3)
+ll.prepend(0)
+ll.display()  # Output: 0 -> 1 -> 2 -> 3 -> None
+ll.delete(2)
+ll.display()  # Output: 0 -> 1 -> 3 -> None
+```
+
+### Explanation:
+
+1. **Node Class**: Represents each element in the linked list. Each node contains a `data` attribute and a `next` attribute that points to the next node in the list.
+
+2. **LinkedList Class**: Manages the linked list. It has a `head` attribute that points to the first node in the list.
+
+3. **append Method**: Adds a new node with the given data to the end of the list.
+
+4. **prepend Method**: Adds a new node with the given data to the beginning of the list.
+
+5. **delete Method**: Removes the first node with the given data from the list. If the data is not found, it does nothing.
+
+6. **display Method**: Prints the elements of the list from head to tail.
+
+This implementation provides basic operations for a singly linked list, including appending, prepending, deleting, and displaying elements.",42.41,success,stop,501,36,12.54,100,good,No issues detected by heuristic checks,code_quality,heuristic,Correctness of the proposed solution; Python syntax and code structure; Relevance to the programming task; Explanation of the implementation; Handling of relevant edge cases,
+21,Explain time and space complexity with examples.,coding,hard,qwen2.5-coder:3b,qwen2.5-coder:3b,"Time and space complexity are two important concepts in computer science that describe the performance of an algorithm. They help us understand how an algorithm will behave as the size of the input data increases.
+
+Time complexity refers to the amount of time an algorithm takes to run as a function of the size of the input data. It is usually expressed using Big O notation, which describes the upper bound of the time complexity in the worst-case scenario. For example, an algorithm that takes a constant amount of time to run, regardless of the size of the input data, has a time complexity of O(1). An algorithm that takes a linear amount of time to run, where the time increases linearly with the size of the input data, has a time complexity of O(n). An algorithm that takes a quadratic amount of time to run, where the time increases quadratically with the size of the input data, has a time complexity of O(n^2).
+
+Space complexity refers to the amount of memory an algorithm uses as a function of the size of the input data. It is usually expressed using Big O notation, which describes the upper bound of the space complexity in the worst-case scenario. For example, an algorithm that uses a constant amount of memory, regardless of the size of the input data, has a space complexity of O(1). An algorithm that uses a linear amount of memory, where the memory increases linearly with the size of the input data, has a space complexity of O(n). An algorithm that uses a quadratic amount of memory, where the memory increases quadratically with the size of the input data, has a space complexity of O(n^2).
+
+Here are some examples to illustrate the concepts of time and space complexity:
+
+1. Sorting algorithms: The time complexity of the bubble sort algorithm is O(n^2), which means that the time it takes to sort an array of n elements increases quadratically with the size of the array. The space complexity of the bubble sort algorithm is O(1), which means that it uses a constant amount of memory, regardless of the size of the array.
+
+2. Searching algorithms: The time complexity of the linear search algorithm is O(n), which means that the time it takes to search for an element in an array of n elements increases linearly with the size of the array. The space complexity of the linear search algorithm is O(1), which means that it uses a constant amount of memory, regardless of the size of the array.
+
+3. Hash tables: The time complexity of the hash table lookup operation is O(1) on average, which means that the time it takes to look up an element in a hash table is constant, regardless of the size of the hash table. The space complexity of the hash table is O(n), which means that it uses a linear amount of memory, where the memory increases linearly with the size of the hash table.
+
+4. Graph algorithms: The time complexity of the breadth-first search algorithm is O(n + m), where n is the number of nodes in the graph and m is the number of edges in the graph. The space complexity of the breadth-first search algorithm is O(n), which means that it uses a linear amount of memory, where the memory increases linearly with the size of the graph.
+
+5. Dynamic programming: The time complexity of the dynamic programming solution to the knapsack problem is O(n * w), where n is the number of items and w is the maximum weight of the knapsack. The space complexity of the dynamic programming solution to the knapsack problem is O(n * w), which means that it uses a two-dimensional array of size n * w, where the memory increases quadratically with the size of the problem.",67.54,success,stop,754,38,11.61,70,average,No recognizable Python code example found,code_quality,heuristic,Correctness of the proposed solution; Python syntax and code structure; Relevance to the programming task; Explanation of the implementation; Handling of relevant edge cases,
+22,Write a Python program to find the longest common subsequence.,coding,hard,qwen2.5-coder:3b,qwen2.5-coder:3b,"To find the longest common subsequence (LCS) between two strings, you can use dynamic programming. Here's a Python program that implements this approach:
+
+```python
+def longest_common_subsequence(str1, str2):
+    # Create a 2D array to store lengths of longest common subsequence
+    m, n = len(str1), len(str2)
+    dp = [[0] * (n + 1) for _ in range(m + 1)]
+
+    # Build the dp array from bottom up
+    for i in range(1, m + 1):
+        for j in range(1, n + 1):
+            if str1[i - 1] == str2[j - 1]:
+                dp[i][j] = dp[i - 1][j - 1] + 1
+            else:
+                dp[i][j] = max(dp[i - 1][j], dp[i][j - 1])
+
+    # Reconstruct the LCS from the dp array
+    lcs = []
+    i, j = m, n
+    while i > 0 and j > 0:
+        if str1[i - 1] == str2[j - 1]:
+            lcs.append(str1[i - 1])
+            i -= 1
+            j -= 1
+        elif dp[i - 1][j] > dp[i][j - 1]:
+            i -= 1
+        else:
+            j -= 1
+
+    # The LCS is built in reverse order, so reverse it
+    lcs.reverse()
+    return ''.join(lcs)
+
+# Example usage
+str1 = ""AGGTAB""
+str2 = ""GXTXAYB""
+print(""Longest Common Subsequence:"", longest_common_subsequence(str1, str2))
+```
+
+### Explanation:
+
+1. **Initialization**: We create a 2D list `dp` where `dp[i][j]` will store the length of the LCS of the substrings `str1[0...i-1]` and `str2[0...j-1]`.
+
+2. **Filling the DP Table**: We iterate over each character of both strings. If the characters match, we add 1 to the value from the previous diagonal cell (`dp[i-1][j-1]`). If they don't match, we take the maximum value from the cell above (`dp[i-1][j]`) or the cell to the left (`dp[i][j-1]`).
+
+3. **Reconstructing the LCS**: Starting from `dp[m][n]`, we backtrack to find the actual LCS. If the characters match, we add the character to the result and move diagonally up-left. If not, we move up or left based on the maximum value.
+
+4. **Result**: The LCS is constructed in reverse order, so we reverse it before returning.
+
+This program efficiently computes the LCS with a time complexity of \(O(m \times n)\), where \(m\) and \(n\) are the lengths of the two input strings.",54.12,success,stop,640,41,12.41,100,good,No issues detected by heuristic checks,code_quality,heuristic,Correctness of the proposed solution; Python syntax and code structure; Relevance to the programming task; Explanation of the implementation; Handling of relevant edge cases,
+23,Implement a basic multithreaded Python application.,coding,hard,qwen2.5-coder:3b,qwen2.5-coder:3b,"Creating a basic multithreaded Python application involves using the `threading` module, which provides a high-level interface for spawning threads. Below is a simple example of how to create a multithreaded application in Python. This example will demonstrate how to create multiple threads that execute different tasks concurrently.
+
+```python
+import threading
+import time
+
+# Define a function that each thread will execute
+def worker(name, delay):
+    print(f""Thread {name} starting"")
+    time.sleep(delay)
+    print(f""Thread {name} finished"")
+
+# Create a list to hold the threads
+threads = []
+
+# Create and start multiple threads
+for i in range(5):
+    thread = threading.Thread(target=worker, args=(i, 2))
+    threads.append(thread)
+    thread.start()
+
+# Wait for all threads to complete
+for thread in threads:
+    thread.join()
+
+print(""All threads have completed"")
+```
+
+### Explanation:
+
+1. **Importing the `threading` module**: This module provides the necessary classes and functions for working with threads in Python.
+
+2. **Defining the `worker` function**: This function takes two arguments: `name` and `delay`. It prints a message indicating that the thread has started, sleeps for the specified delay, and then prints a message indicating that the thread has finished.
+
+3. **Creating a list to hold threads**: This list will store all the threads that are created.
+
+4. **Creating and starting threads**: A loop is used to create 5 threads. Each thread is created with the `worker` function as the target, and a tuple containing the thread's name and delay as the arguments. The `start()` method is called on each thread to begin its execution.
+
+5. **Waiting for all threads to complete**: The `join()` method is called on each thread. This method blocks the calling thread until the thread it is called on has finished executing.
+
+6. **Printing a completion message**: After all threads have completed, a message is printed to indicate that all threads have finished.
+
+This example demonstrates a basic multithreaded application where multiple threads execute concurrently, each performing a simple task. You can modify the `worker` function to perform more complex tasks as needed.",40.91,success,stop,456,39,11.91,100,good,No issues detected by heuristic checks,code_quality,heuristic,Correctness of the proposed solution; Python syntax and code structure; Relevance to the programming task; Explanation of the implementation; Handling of relevant edge cases,
+24,Design a Python caching system using a dictionary.,coding,hard,qwen2.5-coder:3b,qwen2.5-coder:3b,"Designing a simple caching system using a dictionary in Python is a straightforward task. A dictionary in Python is a built-in data structure that allows you to store key-value pairs. In this context, the key can be used to identify the data, and the value can be the data itself or a reference to the data.
+
+Here's a basic implementation of a caching system using a dictionary:
+
+```python
+class SimpleCache:
+    def __init__(self):
+        # Initialize an empty dictionary to store cache items
+        self.cache = {}
+
+    def set(self, key, value):
+        # Store the value in the cache using the key
+        self.cache[key] = value
+
+    def get(self, key):
+        # Retrieve the value from the cache using the key
+        return self.cache.get(key, None)
+
+    def delete(self, key):
+        # Remove the key-value pair from the cache
+        if key in self.cache:
+            del self.cache[key]
+
+    def clear(self):
+        # Clear all items from the cache
+        self.cache.clear()
+
+    def size(self):
+        # Return the number of items in the cache
+        return len(self.cache)
+
+    def keys(self):
+        # Return a list of all keys in the cache
+        return list(self.cache.keys())
+
+    def values(self):
+        # Return a list of all values in the cache
+        return list(self.cache.values())
+
+    def items(self):
+        # Return a list of all key-value pairs in the cache
+        return list(self.cache.items())
+
+# Example usage:
+cache = SimpleCache()
+cache.set('key1', 'value1')
+cache.set('key2', 'value2')
+
+print(cache.get('key1'))  # Output: value1
+print(cache.get('key3'))  # Output: None
+
+cache.delete('key1')
+print(cache.get('key1'))  # Output: None
+
+cache.clear()
+print(cache.size())  # Output: 0
+```
+
+### Key Features of the Simple Cache System:
+
+1. **Set**: Adds a key-value pair to the cache.
+2. **Get**: Retrieves the value associated with a given key.
+3. **Delete**: Removes a key-value pair from the cache.
+4. **Clear**: Removes all items from the cache.
+5. **Size**: Returns the number of items in the cache.
+6. **Keys**: Returns a list of all keys in the cache.
+7. **Values**: Returns a list of all values in the cache.
+8. **Items**: Returns a list of all key-value pairs in the cache.
+
+This implementation is simple and efficient for small to medium-sized caches. However, for larger applications, you might want to consider additional features such as expiration times, eviction policies, or thread safety.",48.17,success,stop,564,38,12.34,100,good,No issues detected by heuristic checks,code_quality,heuristic,Correctness of the proposed solution; Python syntax and code structure; Relevance to the programming task; Explanation of the implementation; Handling of relevant edge cases,
+25,Implement a graph traversal algorithm using BFS and DFS.,coding,hard,qwen2.5-coder:3b,qwen2.5-coder:3b,"Certainly! Below are implementations of both Breadth-First Search (BFS) and Depth-First Search (DFS) algorithms in Python. These implementations are designed to traverse a graph, which can be represented using an adjacency list.
+
+### Breadth-First Search (BFS)
+
+BFS is a graph traversal algorithm that explores all the nodes at the present depth level before moving on to nodes at the next depth level.
+
+```python
+from collections import deque
+
+def bfs(graph, start):
+    visited = set()
+    queue = deque([start])
+    visited.add(start)
+    
+    while queue:
+        node = queue.popleft()
+        print(node, end=' ')
+        
+        for neighbor in graph[node]:
+            if neighbor not in visited:
+                visited.add(neighbor)
+                queue.append(neighbor)
+
+# Example usage:
+graph = {
+    'A': ['B', 'C'],
+    'B': ['A', 'D', 'E'],
+    'C': ['A', 'F'],
+    'D': ['B'],
+    'E': ['B', 'F'],
+    'F': ['C', 'E']
+}
+
+bfs(graph, 'A')
+```
+
+### Depth-First Search (DFS)
+
+DFS is a graph traversal algorithm that explores as far as possible along each branch before backtracking.
+
+```python
+def dfs(graph, start, visited=None):
+    if visited is None:
+        visited = set()
+    
+    visited.add(start)
+    print(start, end=' ')
+    
+    for neighbor in graph[start]:
+        if neighbor not in visited:
+            dfs(graph, neighbor, visited)
+
+# Example usage:
+graph = {
+    'A': ['B', 'C'],
+    'B': ['A', 'D', 'E'],
+    'C': ['A', 'F'],
+    'D': ['B'],
+    'E': ['B', 'F'],
+    'F': ['C', 'E']
+}
+
+dfs(graph, 'A')
+```
+
+### Explanation
+
+- **BFS**: Uses a queue to explore nodes level by level. It starts from a given node and visits all its neighbors before moving to the next level.
+- **DFS**: Uses a stack to explore nodes as far as possible along each branch before backtracking. It starts from a given node and visits all its neighbors before exploring other branches.
+
+These implementations assume that the graph is represented as an adjacency list, where each key in the dictionary is a node, and the value is a list of its neighbors. You can modify the graph structure as needed for your specific use case.",45.73,success,stop,521,39,12.07,100,good,No issues detected by heuristic checks,code_quality,heuristic,Correctness of the proposed solution; Python syntax and code structure; Relevance to the programming task; Explanation of the implementation; Handling of relevant edge cases,
+26,"If five machines produce five products in five minutes, how long will 100 machines take to produce 100 products?",reasoning,easy,llama3.2:3b,llama3.2:3b,"To solve this problem, we need to understand the relationship between the number of machines, the number of products, and the time taken.
+
+In the given scenario, 5 machines produce 5 products in 5 minutes. This means that each machine produces 1 product in 5 minutes.
+
+Now, if we have 100 machines, each machine will still produce 1 product in 5 minutes. Therefore, 100 machines will also produce 100 products in 5 minutes.
+
+So, the answer is 5 minutes.",17.52,success,stop,106,48,12.61,100,good,No issues detected by heuristic checks,reasoning_quality,heuristic,Correctness of the final answer; Logical step-by-step explanation; Use of relevant facts and calculations; Consistency of reasoning; Clarity of the conclusion,
+27,Analyze the time complexity of binary search.,reasoning,easy,llama3.2:3b,llama3.2:3b,"Binary search is an efficient algorithm for finding an item from a sorted list of items. It works by repeatedly dividing in half the portion of the list that could contain the item, until you've narrowed down the possible locations to just one.
+
+The time complexity of binary search is O(log n), where n is the number of items in the list. This is because with each comparison, the algorithm effectively halves the size of the search space.
+
+Here's a step-by-step breakdown of how binary search works and its time complexity:
+
+1.  Start with a sorted list of n items.
+2.  Compare the target item with the middle item of the list.
+3.  If the target item is less than the middle item, repeat the process with the left half of the list.
+4.  If the target item is greater than the middle item, repeat the process with the right half of the list.
+5.  Continue this process until the target item is found or the search space is empty.
+
+The key insight behind binary search is that each comparison reduces the size of the search space by half. This means that the number of comparisons required to find the target item is proportional to the logarithm of the size of the list.
+
+Mathematically, this can be represented as:
+
+T(n) = O(log n)
+
+where T(n) is the time complexity of the algorithm, and n is the number of items in the list.
+
+The reason for this logarithmic time complexity is that each comparison effectively halves the size of the search space. This means that the number of comparisons required to find the target item is proportional to the number of times you can divide the search space in half before reaching a single item.
+
+For example, if you have a list of 1,000 items, the number of comparisons required to find a specific item using binary search would be:
+
+log2(1,000) = 10
+
+This means that the algorithm would need to make 10 comparisons to find the target item.
+
+Overall, binary search is an efficient algorithm for finding items in a sorted list, with a time complexity of O(log n).",40.99,success,stop,428,34,11.14,90,good,Conclusion or final result is not clearly signposted,reasoning_quality,heuristic,Correctness of the final answer; Logical step-by-step explanation; Use of relevant facts and calculations; Consistency of reasoning; Clarity of the conclusion,
+28,A train travels 120 km in two hours. Calculate its average speed.,reasoning,easy,llama3.2:3b,llama3.2:3b,"To calculate the average speed of the train, we need to divide the distance traveled by the time taken.
+
+Distance = 120 km
+Time = 2 hours
+
+Average Speed = Distance / Time
+= 120 km / 2 hours
+= 60 km/h
+
+So, the average speed of the train is 60 km/h.",7.52,success,stop,70,40,14.19,90,good,Conclusion or final result is not clearly signposted,reasoning_quality,heuristic,Correctness of the final answer; Logical step-by-step explanation; Use of relevant facts and calculations; Consistency of reasoning; Clarity of the conclusion,
+29,Explain the logical reasoning behind the water jug problem.,reasoning,easy,llama3.2:3b,llama3.2:3b,"The water jug problem is a classic example of a puzzle that requires logical reasoning and problem-solving skills. Here's a brief explanation of the problem and the logical reasoning behind it:
+
+**The Problem:**
+
+You have two jugs of water, one with a capacity of 3 liters and the other with a capacity of 5 liters. You want to measure out exactly 4 liters of water using only these two jugs. How can you do it?
+
+**Logical Reasoning:**
+
+To solve this problem, you need to use a combination of logical reasoning and mathematical calculations. Here's a step-by-step approach:
+
+1. **Identify the constraints:** The two jugs have different capacities, and you need to measure out exactly 4 liters of water. This means you need to find a way to transfer water from one jug to the other in a way that results in a total volume of 4 liters.
+2. **Use the ""fill and pour"" strategy:** To solve this problem, you need to use the ""fill and pour"" strategy, which involves filling one jug with water and then pouring it into the other jug. You can also use the ""empty and fill"" strategy, which involves emptying one jug and then filling it with water from the other jug.
+3. **Calculate the possible combinations:** Using the ""fill and pour"" strategy, you can calculate the possible combinations of water transfers that result in a total volume of 4 liters. For example, you can fill the 3-liter jug and pour it into the 5-liter jug, leaving 2 liters in the 3-liter jug. Then, you can fill the 3-liter jug again and pour it into the 5-liter jug, which already has 2 liters. This results in a total volume of 4 liters.
+4. **Eliminate impossible combinations:** You need to eliminate any combinations that result in a total volume greater than 4 liters or less than 0 liters. For example, if you fill the 5-liter jug and pour it into the 3-liter jug, you will have 2 liters left in the 5-liter jug, which is not enough to measure out 4 liters.
+5. **Find the solution:** By using the ""fill and pour"" strategy and eliminating impossible combinations, you can find the solution to the problem. In this case, the solution is to fill the 3-liter jug and pour it into the 5-liter jug, and then fill the 3-liter jug again and pour it into the 5-liter jug, resulting in a total volume of 4 liters.
+
+**Logical Reasoning Techniques:**
+
+The water jug problem requires the use of several logical reasoning techniques, including:
+
+* **Modus ponens:** This involves using a set of rules or assumptions to arrive at a conclusion. In this case, the rules are the capacities of the two jugs and the goal of measuring out exactly 4 liters of water.
+* **Deductive reasoning:** This involves using logical deductions to arrive at a conclusion. In this case, the deductions involve calculating the possible combinations of water transfers and eliminating impossible combinations.
+* **Abductive reasoning:** This involves using logical reasoning to make an educated guess or hypothesis. In this case, the hypothesis is that the solution involves using the ""fill and pour"" strategy and eliminating impossible combinations.
+
+Overall, the water jug problem requires the use of logical reasoning and problem-solving skills to arrive at a solution. It is a classic example of a puzzle that can be solved using a combination of mathematical calculations and logical deductions.",93.77,success,stop,722,36,7.93,100,good,No issues detected by heuristic checks,reasoning_quality,heuristic,Correctness of the final answer; Logical step-by-step explanation; Use of relevant facts and calculations; Consistency of reasoning; Clarity of the conclusion,
+30,"If all roses are flowers and some flowers fade quickly, can we conclude all roses fade quickly?",reasoning,easy,llama3.2:3b,llama3.2:3b,"No, we cannot conclude that all roses fade quickly.
+
+The statement ""some flowers fade quickly"" is a generalization that applies to a subset of flowers, but it does not imply that all flowers in that subset fade quickly. It's possible that some flowers in that subset may not fade quickly, and it's also possible that other types of flowers may fade quickly.
+
+In this case, the statement ""all roses are flowers"" is a specific instance that is part of the larger category of flowers. However, the fact that some flowers in the larger category may fade quickly does not necessarily mean that all roses in that category will fade quickly.
+
+To make a conclusion about all roses, we would need more specific information about the behavior of roses, such as evidence that all roses are prone to fading quickly. The given information is insufficient to make such a conclusion.",22.29,success,stop,171,44,8.78,90,good,Conclusion or final result is not clearly signposted,reasoning_quality,heuristic,Correctness of the final answer; Logical step-by-step explanation; Use of relevant facts and calculations; Consistency of reasoning; Clarity of the conclusion,
+31,Analyze the space complexity of merge sort.,reasoning,easy,llama3.2:3b,llama3.2:3b,"The space complexity of merge sort is O(n), where n is the number of elements in the input array.
+
+Here's why:
+
+1.  **Divide and Conquer**: Merge sort is a divide-and-conquer algorithm. It divides the input array into two halves, recursively sorts each half, and then merges the two sorted halves.
+2.  **Recursive Calls**: When the algorithm recursively calls itself, it creates a new stack frame for each recursive call. The maximum number of stack frames is equal to the maximum depth of the recursion tree, which is O(log n) in the worst case.
+3.  **Temporary Storage**: During the merge process, the algorithm needs to store the temporary results in a temporary array. The size of this temporary array is equal to the size of the input array, which is O(n).
+4.  **Merging**: The merge process involves comparing elements from two sorted arrays and placing them in a temporary array. This process requires additional space, which is also O(n).
+
+Since the maximum space required is O(n) (the size of the temporary array), the space complexity of merge sort is O(n).
+
+Here's a step-by-step breakdown of the space complexity:
+
+1.  **Initial Call**: The initial call to the merge sort function requires O(1) space.
+2.  **Recursive Calls**: Each recursive call creates a new stack frame, which requires O(log n) space.
+3.  **Temporary Storage**: During the merge process, the algorithm needs to store the temporary results in a temporary array, which requires O(n) space.
+4.  **Merging**: The merge process involves comparing elements from two sorted arrays and placing them in a temporary array, which requires additional O(n) space.
+
+Since the maximum space required is O(n), the space complexity of merge sort is O(n).
+
+Here's a simple example in Python to illustrate the space complexity of merge sort:
+
+```python
+def merge_sort(arr):
+    # Base case: If the array has only one element, return it
+    if len(arr) <= 1:
+        return arr
+
+    # Divide the array into two halves
+    mid = len(arr) // 2
+    left_half = arr[:mid]
+    right_half = arr[mid:]
+
+    # Recursively sort each half
+    left_half = merge_sort(left_half)
+    right_half = merge_sort(right_half)
+
+    # Merge the two sorted halves
+    return merge(left_half, right_half)
+
+
+def merge(left, right):
+    # Initialize the temporary array
+    temp = []
+
+    # Merge the two sorted arrays
+    while len(left) > 0 and len(right) > 0:
+        if left[0] <= right[0]:
+            temp.append(left.pop(0))
+        else:
+            temp.append(right.pop(0))
+
+    # Append any remaining elements
+    temp.extend(left)
+    temp.extend(right)
+
+    return temp
+
+
+# Example usage
+arr = [64, 34, 25, 12, 22, 11, 90]
+sorted_arr = merge_sort(arr)
+print(""Sorted array:"", sorted_arr)
+```
+
+In this example, the space complexity of merge sort is O(n), where n is the number of elements in the input array. The algorithm uses a temporary array to store the merged results, which requires O(n) space.",77.49,success,stop,685,34,9.15,100,good,No issues detected by heuristic checks,reasoning_quality,heuristic,Correctness of the final answer; Logical step-by-step explanation; Use of relevant facts and calculations; Consistency of reasoning; Clarity of the conclusion,
+32,A person walks 5 km north and 3 km east. Calculate the shortest distance from the starting point.,reasoning,easy,llama3.2:3b,llama3.2:3b,"To find the shortest distance from the starting point, we need to calculate the length of the hypotenuse of a right triangle with legs of 5 km (north) and 3 km (east).
+
+Using the Pythagorean theorem:
+
+a² + b² = c²
+
+where a = 5 km and b = 3 km, we get:
+
+5² + 3² = c²
+25 + 9 = c²
+34 = c²
+
+Now, take the square root of both sides:
+
+c = √34 ≈ 5.83 km
+
+So, the shortest distance from the starting point is approximately 5.83 km.",14.36,success,stop,135,47,11.95,90,good,Conclusion or final result is not clearly signposted,reasoning_quality,heuristic,Correctness of the final answer; Logical step-by-step explanation; Use of relevant facts and calculations; Consistency of reasoning; Clarity of the conclusion,
+33,Explain how recursion works using the Tower of Hanoi problem.,reasoning,easy,llama3.2:3b,llama3.2:3b,"The Tower of Hanoi is a classic problem in computer science that demonstrates the concept of recursion. Here's how it works:
+
+**The Problem:**
+
+Imagine you have three rods (A, B, and C) and a set of disks of different sizes that can be stacked on top of each other. The disks are initially stacked on rod A in decreasing order of size. The goal is to move the disks to rod C, following these rules:
+
+1. Only one disk can be moved at a time.
+2. A disk can only be moved from one rod to another if the disk being moved is the topmost disk on the source rod.
+3. A disk cannot be placed on top of a smaller disk.
+
+**The Recursive Solution:**
+
+The Tower of Hanoi problem can be solved using recursion, which is a programming technique where a function calls itself repeatedly until a base case is reached.
+
+Here's a step-by-step explanation of how the recursion works:
+
+1. **Base Case:** If there is only one disk to move, it can be moved directly from rod A to rod C.
+2. **Recursive Case:** If there are multiple disks to move, the following steps are taken:
+	* Move `n-1` disks from rod A to rod B, using rod C as a temporary storage.
+	* Move the nth disk from rod A to rod C.
+	* Move the `n-1` disks from rod B to rod C, using rod A as a temporary storage.
+3. **Recursion:** The recursive case is repeated until the base case is reached.
+
+**Example:**
+
+Let's say we have 3 disks to move. The recursive solution would work as follows:
+
+1. Move 2 disks from rod A to rod B, using rod C as a temporary storage.
+2. Move the 3rd disk from rod A to rod C.
+3. Move the 2 disks from rod B to rod C, using rod A as a temporary storage.
+
+The recursion continues until the base case is reached, where only one disk is left to move. The final solution is to move the single disk from rod A to rod C.
+
+**Code Example:**
+
+Here's a simple Python implementation of the Tower of Hanoi problem using recursion:
+```python
+def tower_of_hanoi(n, from_rod, to_rod, temp_rod):
+    if n == 1:
+        # Base case: move one disk
+        print(f""Move disk 1 from {from_rod} to {to_rod}"")
+        return
+    # Recursive case: move n-1 disks
+    tower_of_hanoi(n-1, from_rod, temp_rod, to_rod)
+    # Move the nth disk
+    print(f""Move disk {n} from {from_rod} to {to_rod}"")
+    tower_of_hanoi(n-1, temp_rod, to_rod, from_rod)
+
+# Example usage:
+tower_of_hanoi(3, 'A', 'C', 'B')
+```
+This code defines a recursive function `tower_of_hanoi` that takes four arguments: `n` (the number of disks), `from_rod` (the source rod), `to_rod` (the destination rod), and `temp_rod` (the temporary rod). The function uses recursion to move the disks from the source rod to the destination rod, following the rules of the Tower of Hanoi problem.",67.54,success,stop,707,38,10.89,90,good,Conclusion or final result is not clearly signposted,reasoning_quality,heuristic,Correctness of the final answer; Logical step-by-step explanation; Use of relevant facts and calculations; Consistency of reasoning; Clarity of the conclusion,
+34,"Find the next number in the sequence 2, 6, 12, 20, 30.",reasoning,medium,deepseek-r1:1.5b,deepseek-r1:1.5b,"To find the next number in the sequence **2, 6, 12, 20, 30**, let's analyze the pattern step by step.
+
+1. **Calculate the Differences Between Consecutive Terms:**
+   
+   - \(6 - 2 = 4\)
+   - \(12 - 6 = 6\)
+   - \(20 - 12 = 8\)
+   - \(30 - 20 = 10\)
+
+2. **Observe the Pattern in the Differences:**
+   
+   The differences are **4, 6, 8, 10**, which are consecutive even numbers increasing by **2** each time.
+
+3. **Determine the Next Difference:**
+   
+   Following the pattern, the next difference should be **12** (since \(10 + 2 = 12\)).
+
+4. **Find the Next Term in the Sequence:**
+   
+   - **Last Term:** 30
+   - **Next Term:** \(30 + 12 = 42\)
+
+**Final Answer:**
+
+\[
+\boxed{42}
+\]",21.65,success,stop,347,28,21.63,100,good,No issues detected by heuristic checks,reasoning_quality,heuristic,Correctness of the final answer; Logical step-by-step explanation; Use of relevant facts and calculations; Consistency of reasoning; Clarity of the conclusion,
+35,Compare greedy algorithms and dynamic programming.,reasoning,medium,deepseek-r1:1.5b,deepseek-r1:1.5b,"**Comparison of Greedy Algorithms and Dynamic Programming**
+
+**1. Definition and Approach:**
+- **Greedy Algorithm:** A greedy algorithm makes locally optimal choices at each step, aiming to achieve the global optimum. It selects the best option available at the current stage, often leading to efficient solutions.
+- **Dynamic Programming:** Dynamic programming solves problems by breaking them into smaller subproblems, solving each, and combining their solutions. It is particularly useful for problems with optimal substructure and overlapping subproblems, ensuring a systematic approach.
+
+**2. Time Complexity:**
+- **Greedy Algorithm:** Typically runs in linear or near-linear time, making it efficient.
+- **Dynamic Programming:** Can be more time-consuming, especially with problems involving many subproblems and requiring multiple computations.
+
+**3. Reliability:**
+- **Greedy Algorithm:** May miss optimal solutions if locally optimal choices don't lead to global optima, such as in the knapsack problem.
+- **Dynamic Programming:** Systematic and reliable, as it considers all possibilities and uses stored solutions to build up the answer.
+
+**4. Implementation Complexity:**
+- **Greedy Algorithm:** Easier to implement due to its simplicity and lack of complex state tracking.
+- **Dynamic Programming:** More complex, requiring planning and handling of overlapping subproblems, which can be error-prone if not executed correctly.
+
+**5. Handling Overlapping Subproblems:**
+- **Greedy Algorithm:** Does not handle overlapping subproblems, as it doesn't store intermediate results.
+- **Dynamic Programming:** Manages overlapping subproblems by storing solutions, ensuring efficient reuse of previously computed results.
+
+**6. Examples:**
+- **Greedy Algorithm:** Knapsack problem, where the most valuable item is chosen first.
+- **Dynamic Programming:** Longest common subsequence problem, where all possibilities are considered.
+
+In conclusion, while greedy algorithms offer efficiency and simplicity, dynamic programming ensures reliability by systematically solving subproblems and combining their solutions. Greedy is easier to implement but may fail in certain cases, whereas dynamic programming is more reliable but more complex.",49.85,success,stop,933,10,19.63,100,good,No issues detected by heuristic checks,reasoning_quality,heuristic,Correctness of the final answer; Logical step-by-step explanation; Use of relevant facts and calculations; Consistency of reasoning; Clarity of the conclusion,
+36,A bag contains three red and two blue balls. Calculate the probability of selecting a red ball.,reasoning,medium,deepseek-r1:1.5b,deepseek-r1:1.5b,"To calculate the probability of selecting a red ball from the bag, follow these steps:
+
+1. **Determine the Total Number of Balls:**
+   
+   - **Red Balls:** 3
+   - **Blue Balls:** 2
+   - **Total Balls:** \( 3 + 2 = 5 \)
+
+2. **Identify the Number of Favorable Outcomes:**
+   
+   - **Favorable Outcomes (Red Balls):** 3
+
+3. **Calculate the Probability:**
+   
+   \[
+   \text{Probability of selecting a red ball} = \frac{\text{Number of Red Balls}}{\text{Total Number of Balls}} = \frac{3}{5}
+   \]
+
+**Final Answer:**
+
+\[
+\boxed{\dfrac{3}{5}}
+\]",12.9,success,stop,272,22,25.91,100,good,No issues detected by heuristic checks,reasoning_quality,heuristic,Correctness of the final answer; Logical step-by-step explanation; Use of relevant facts and calculations; Consistency of reasoning; Clarity of the conclusion,
+37,Explain the optimal strategy for the coin change problem.,reasoning,medium,deepseek-r1:1.5b,deepseek-r1:1.5b,,158.28,failed,,0,0,0,0,poor,Evaluation failed,reasoning_quality,heuristic,Correctness of the final answer; Logical step-by-step explanation; Use of relevant facts and calculations; Consistency of reasoning; Clarity of the conclusion,Ollama returned an empty response
+38,Analyze the worst-case complexity of quicksort.,reasoning,medium,deepseek-r1:1.5b,deepseek-r1:1.5b,"The worst-case time complexity of quicksort is O(n²). This occurs when the pivot chosen is either the smallest or largest element in the array, leading to the most unbalanced partitioning. Each recursive call processes a smaller sub-array, resulting in a total of (n-1) + (n-2) + ... + 1 comparisons, which sums to n(n-1)/2. Thus, the time complexity is quadratic.
+
+**Answer:** The worst-case time complexity of quicksort is O(n²).",35.16,success,stop,687,13,20.93,100,good,No issues detected by heuristic checks,reasoning_quality,heuristic,Correctness of the final answer; Logical step-by-step explanation; Use of relevant facts and calculations; Consistency of reasoning; Clarity of the conclusion,
+39,Determine whether a given graph contains a cycle.,reasoning,medium,deepseek-r1:1.5b,deepseek-r1:1.5b,,151.5,failed,,0,0,0,0,poor,Evaluation failed,reasoning_quality,heuristic,Correctness of the final answer; Logical step-by-step explanation; Use of relevant facts and calculations; Consistency of reasoning; Clarity of the conclusion,Ollama returned an empty response
+40,Explain the travelling salesperson problem.,reasoning,medium,deepseek-r1:1.5b,deepseek-r1:1.5b,"The Traveling Salesperson Problem (TSP) is a classic problem in computer science and operations research that involves finding the shortest possible route that visits each city exactly once and returns to the starting city. Here's a structured explanation of the problem and its significance:
+
+1. **Problem Definition**:
+   - The TSP is about a salesperson who needs to visit a set of cities. The goal is to determine the shortest possible route that allows the salesperson to visit each city exactly once and return to the starting city.
+
+2. **Key Considerations**:
+   - **Distance Measurement**: The problem typically uses straight-line (Euclidean) distances between cities, not actual driving distances.
+   - **Complexity**: The TSP is NP-hard, meaning that as the number of cities increases, the problem becomes exponentially more difficult to solve exactly. This computational complexity necessitates the use of heuristic and approximation algorithms for large instances.
+
+3. **Applications**:
+   - The TSP has numerous real-world applications, including logistics (delivery routes), manufacturing (job sequencing), genetics (DNA sequencing), and astronomy (scheduling observations).
+
+4. **Relation to Other Problems**:
+   - The TSP is a specific case of the Hamiltonian cycle problem, which is a decision problem that asks whether a Hamiltonian cycle exists in a graph. The TSP seeks the shortest Hamiltonian cycle.
+
+5. **Graph Representation**:
+   - The TSP can be modeled as a graph problem where each city is a node, and edges represent the distances between cities. The goal is to find the shortest Hamiltonian cycle.
+
+6. **Algorithms and Techniques**:
+   - **Nearest Neighbor Algorithm**: A simple heuristic that starts at a city and always visits the nearest unvisited city.
+   - **2-opt and 3-opt Algorithms**: Local search heuristics that improve an initial solution by reversing edges to reduce the total distance.
+   - **Held-Karp Algorithm**: A dynamic programming approach that solves the TSP exactly for small instances.
+   - **Branch and Bound**: A method that explores the solution space systematically, often used for exact solutions in smaller instances.
+   - **Metaheuristics**: Techniques like genetic algorithms and ant colony optimization are used for larger instances, providing good solutions efficiently.
+
+7. **Optimal Tour**:
+   - The optimal tour is the shortest possible route that visits all cities and returns to the starting point. Finding this tour is the goal of the TSP, which is challenging due to the factorial growth in possible routes for large numbers of cities.
+
+In summary, the TSP is a fundamental problem in computer science and operations research, known for its NP-hard nature and wide-ranging applications. It has been extensively studied with various algorithms and techniques to find optimal or near-optimal solutions.",64.39,success,stop,1464,11,23.58,90,good,Conclusion or final result is not clearly signposted,reasoning_quality,heuristic,Correctness of the final answer; Logical step-by-step explanation; Use of relevant facts and calculations; Consistency of reasoning; Clarity of the conclusion,
+41,Compare depth-first search and breadth-first search.,reasoning,medium,deepseek-r1:1.5b,deepseek-r1:1.5b,"Depth-First Search (DFS) and Breadth-First Search (BFS) are two fundamental algorithms used for traversing and searching graphs. Here's a structured comparison based on their key aspects:
+
+### Key Differences:
+
+1. **Traversal Method:**
+   - **DFS:** Uses a stack (LIFO) to manage nodes, exploring one branch as deep as possible before backtracking.
+   - **BFS:** Uses a queue (FIFO) to manage nodes, exploring all nodes at the current depth level before moving to the next.
+
+2. **Memory Usage:**
+   - **DFS:** Can use more memory due to the stack's LIFO nature, potentially leading to higher memory usage for deep graphs.
+   - **BFS:** Typically uses less memory as it processes nodes level by level, keeping all nodes at the current level before moving on.
+
+3. **Time Complexity:**
+   - **DFS:** Time complexity is O(V + E), where V is the number of vertices and E is the number of edges. It can be efficient for finding a solution quickly.
+   - **BFS:** Time complexity is also O(V + E), but it is generally considered more efficient for finding the shortest path in unweighted graphs.
+
+4. **Space Complexity:**
+   - **DFS:** Can require more memory due to the stack's depth, especially for deep graphs.
+   - **BFS:** Uses less memory as it processes nodes level by level.
+
+5. **Applications:**
+   - **DFS:** Often used in games like tic-tac-toe for exploring all possible moves.
+   - **BFS:** Used for finding the shortest path in unweighted graphs, such as in image processing.
+
+6. **Implementation Details:**
+   - **DFS:** Can be implemented recursively, which is easy to understand but may cause stack overflow issues.
+   - **BFS:** Typically implemented using a queue, which is straightforward.
+
+### Summary:
+
+- **DFS** is better for finding a solution quickly and is suitable for problems where the shortest path is required.
+- **BFS** is more efficient in terms of time complexity for finding the shortest path in unweighted graphs and",154.12,incomplete,length,1536,12,10.11,90,good,Conclusion or final result is not clearly signposted,reasoning_quality,heuristic,Correctness of the final answer; Logical step-by-step explanation; Use of relevant facts and calculations; Consistency of reasoning; Clarity of the conclusion,
+42,A farmer has 17 sheep and all but 9 escape. How many remain?,reasoning,medium,deepseek-r1:1.5b,deepseek-r1:1.5b,"**Solution:**
+
+The problem states that a farmer has **17 sheep** and all but **9** escape. To find out how many sheep remain, follow these steps:
+
+1. **Determine the number of sheep that escape:**
+   
+   \[
+   \text{Sheep that escape} = 17 - 9 = 8
+   \]
+
+2. **Calculate the number of sheep that remain:**
+   
+   \[
+   \text{Sheep that remain} = 17 - 8 = 9
+   \]
+
+**Final Answer:**
+
+\[
+\boxed{9}
+\]",11.93,success,stop,241,21,25.4,100,good,No issues detected by heuristic checks,reasoning_quality,heuristic,Correctness of the final answer; Logical step-by-step explanation; Use of relevant facts and calculations; Consistency of reasoning; Clarity of the conclusion,
+43,Explain the principle of mathematical induction.,reasoning,hard,deepseek-r1:1.5b,deepseek-r1:1.5b,"Mathematical induction is a method used to prove that a statement holds true for all natural numbers. It consists of two main steps:
+
+1. **Base Case**: Verify that the statement is true for the initial value, typically \( n = 1 \).
+
+2. **Inductive Step**: Assume the statement is true for an arbitrary natural number \( k \), and then prove that it must also be true for \( k + 1 \).
+
+By proving these two steps, we can conclude that the statement is true for all natural numbers \( n \).
+
+**Example**: Proving the formula for the sum of the first \( n \) natural numbers, \( P(n) = \frac{n(n + 1)}{2} \).
+
+- **Base Case**: For \( n = 1 \), the sum is 1, and the formula gives \( \frac{1(1 + 1)}{2} = 1 \). Thus, \( P(1) \) is true.
+
+- **Inductive Step**: Assume \( P(k) \) is true, i.e., \( 1 + 2 + \dots + k = \frac{k(k + 1)}{2} \). For \( k + 1 \), the sum is \( \frac{k(k + 1)}{2} + (k + 1) \). Simplifying, we get \( \frac{(k + 1)(k + 2)}{2} \), which is \( P(k + 1) \). Hence, \( P(k + 1) \) is true.
+
+By induction, \( P(n) \) is true for all natural numbers \( n \).
+
+**Conclusion**: Mathematical induction is a powerful proof technique that allows proving statements for all natural numbers by verifying the base case and the inductive step.",59.39,success,stop,1361,11,23.83,100,good,No issues detected by heuristic checks,reasoning_quality,heuristic,Correctness of the final answer; Logical step-by-step explanation; Use of relevant facts and calculations; Consistency of reasoning; Clarity of the conclusion,
+44,Analyze the complexity of nested loops with different iteration counts.,reasoning,hard,deepseek-r1:1.5b,deepseek-r1:1.5b,,148.06,failed,,0,0,0,0,poor,Evaluation failed,reasoning_quality,heuristic,Correctness of the final answer; Logical step-by-step explanation; Use of relevant facts and calculations; Consistency of reasoning; Clarity of the conclusion,Ollama returned an empty response
+45,Find the shortest path in a weighted graph using Dijkstra's algorithm.,reasoning,hard,deepseek-r1:1.5b,deepseek-r1:1.5b,,143.61,failed,,0,0,0,0,poor,Evaluation failed,reasoning_quality,heuristic,Correctness of the final answer; Logical step-by-step explanation; Use of relevant facts and calculations; Consistency of reasoning; Clarity of the conclusion,Ollama returned an empty response
+46,Explain the producer-consumer synchronization problem.,reasoning,hard,deepseek-r1:1.5b,deepseek-r1:1.5b,"The producer-consumer synchronization problem is a fundamental issue in concurrent programming where producers and consumers need to access shared resources without causing race conditions, deadlocks, or data inconsistency. 
+
+**Key Components:**
+1. **Producers:** Create data and send it to consumers.
+2. **Consumers:** Read data and process it.
+
+**Problem:**
+Producers and consumers do not coordinate access to shared resources, leading to potential issues such as race conditions, deadlocks, and data inconsistency.
+
+**Solutions and Approaches:**
+1. **Database Systems:** Use transactions to ensure data consistency. Each transaction ensures data is consistent across producers and consumers.
+2. **Networking:** Ensure data availability through synchronization mechanisms, such as file systems, where each file is created by one process and read by another.
+3. **General Solutions:** The producer-consumer problem is a classic issue, with various algorithms and protocols designed to solve it, such as producer-consumer synchronization in database systems and networking.
+
+**Implications:**
+Inefficient synchronization can lead to deadlocks and data inconsistency. Addressing this problem is crucial for efficient and reliable systems.
+
+**Conclusion:**
+The producer-consumer synchronization problem requires efficient coordination to prevent race conditions and ensure data consistency. Solutions include database transactions, networking synchronization, and general concurrency algorithms.",53.51,success,stop,1041,12,20.34,90,good,Conclusion or final result is not clearly signposted,reasoning_quality,heuristic,Correctness of the final answer; Logical step-by-step explanation; Use of relevant facts and calculations; Consistency of reasoning; Clarity of the conclusion,
+47,Analyze a scheduling problem with multiple competing tasks.,reasoning,hard,deepseek-r1:1.5b,deepseek-r1:1.5b,,140.58,failed,,0,0,0,0,poor,Evaluation failed,reasoning_quality,heuristic,Correctness of the final answer; Logical step-by-step explanation; Use of relevant facts and calculations; Consistency of reasoning; Clarity of the conclusion,Ollama returned an empty response
+48,Explain the difference between NP-hard and NP-complete problems.,reasoning,hard,deepseek-r1:1.5b,deepseek-r1:1.5b,"**Difference Between NP-hard and NP-complete Problems**
+
+**NP-hard Problems:**
+- NP-hard problems are a class of problems that are at least as hard as the hardest problems in NP (nondeterministic polynomial time). 
+- These problems can be reduced to each other in polynomial time, but they are not necessarily in NP themselves.
+- Not all NP-hard problems are in NP, meaning they might not have a solution that can be verified in polynomial time.
+
+**NP-complete Problems:**
+- NP-complete problems are a subset of NP-hard problems and are also in NP.
+- NP-complete problems are the hardest problems in NP, meaning they are both NP-hard and in NP.
+- If a polynomial-time algorithm is found for an NP-complete problem, it can be used to solve all NP problems in polynomial time.
+- Not all NP-hard problems are NP-complete, as demonstrated by examples like the Traveling Salesman Problem, which is NP-hard but not in NP.
+
+**Summary:**
+- NP-hard problems are broader and include NP-complete problems.
+- NP-complete problems are the hardest in NP and are also in NP.
+- The distinction is crucial because it affects what we can efficiently compute, with the P vs NP problem being a central question in computer science.",60.04,success,stop,1168,15,20.24,90,good,Conclusion or final result is not clearly signposted,reasoning_quality,heuristic,Correctness of the final answer; Logical step-by-step explanation; Use of relevant facts and calculations; Consistency of reasoning; Clarity of the conclusion,
+49,Design an efficient algorithm to detect duplicate values in a large dataset.,reasoning,hard,deepseek-r1:1.5b,deepseek-r1:1.5b,"To efficiently detect duplicate values in a large dataset, we can use a combination of hash-based methods for numerical and string values. Here's a step-by-step approach:
+
+### Algorithm Design
+
+1. **Normalize the Data:**
+   - Convert all string values to a common format (e.g., lowercase) to handle case sensitivity.
+   - Remove punctuation and special characters to reduce the number of unique values.
+
+2. **Use Multiple Hash Functions:**
+   - Employ two or more hash functions to minimize the probability of collisions. This ensures that the chance of false positives is reduced.
+
+3. **Track Seen Values:**
+   - Use a dictionary or a hash set to store the unique values as they are encountered.
+   - For each value, compute the hash using the multiple hash functions and",159.56,incomplete,length,1536,16,20.65,90,good,Conclusion or final result is not clearly signposted,reasoning_quality,heuristic,Correctness of the final answer; Logical step-by-step explanation; Use of relevant facts and calculations; Consistency of reasoning; Clarity of the conclusion,
+50,Evaluate the trade-offs between time complexity and memory usage in algorithm design.,reasoning,hard,deepseek-r1:1.5b,deepseek-r1:1.5b,"The trade-offs between time complexity and memory usage in algorithm design are crucial for determining the efficiency of an algorithm. Here's a structured evaluation of these two factors:
+
+1. **Time Complexity**:
+   - **Definition**: Measures the amount of time an algorithm takes to run, typically using big O notation.
+   - **Key Points**:
+     - It assesses the growth rate of operations as the input size (n) increases.
+     - Common complexities include O(1), O(log n), O(n), O(n log n), and O(n²).
+     - Lower time complexity algorithms are generally preferred for scalability, especially for large inputs.
+
+2. **Memory Usage**:
+   - **Definition**: Measures the amount of memory an algorithm uses during its execution.
+   - **Key Points**:
+     - It depends on the data structures used.
+     - Lower memory usage can lead to more efficient use of resources, but it may come at the cost of slower execution.
+     - Some algorithms, like in-place sorting, use minimal memory (e.g., O(1) or O(n)) but may have higher time complexity.
+
+3. **Trade-offs and Considerations**:
+   - **Balanced Approach**: Both time and memory are critical. For instance, in real-time systems, a more efficient algorithm with higher time complexity might be necessary despite higher memory usage.
+   - **Problem Size**: For small input sizes, memory may not be a significant constraint, but for large inputs, trade-offs become critical.
+   - **In-place vs. Out-of-place Algorithms**: In-place algorithms (e.g., merge sort) use less memory but may have higher time complexity, while out-of-place algorithms (e.g., quickselect) use more memory but can be faster.
+   - **Efficiency in Specific Cases**: Some algorithms are inherently efficient in one domain. For example, in-place sorting algorithms are O(n) time and O(1) memory, making them ideal for memory-constrained environments.
+
+4. **Conclusion**:
+   - The choice between time and memory efficiency depends on the problem requirements, available resources, and the specific trade-offs needed.
+   - A balance is often necessary, as a problem may require a more complex algorithm with higher time complexity for optimal performance, or a simpler one with lower memory usage for resource constraints.
+
+In summary, time complexity and memory usage are interdependent and affect algorithm performance. The choice between them depends on the problem's specifics and the resources available, requiring a careful balance to achieve the best results.",85.95,success,stop,1528,17,18.28,100,good,No issues detected by heuristic checks,reasoning_quality,heuristic,Correctness of the final answer; Logical step-by-step explanation; Use of relevant facts and calculations; Consistency of reasoning; Clarity of the conclusion,
+51,Explain the difference between machine learning and deep learning.,general,easy,llama3.2:3b,llama3.2:3b,"Machine learning and deep learning are two related but distinct fields of artificial intelligence (AI) that enable computers to learn from data without being explicitly programmed.
+
+**Machine Learning:**
+
+Machine learning is a subset of AI that involves training algorithms to make predictions or decisions based on data. The goal of machine learning is to enable computers to learn from data and improve their performance over time. Machine learning algorithms can be categorized into three main types:
+
+1. **Supervised learning**: The algorithm is trained on labeled data, where the correct output is already known. The goal is to learn a mapping between input data and output labels.
+2. **Unsupervised learning**: The algorithm is trained on unlabeled data, and it must find patterns or structure in the data on its own.
+3. **Reinforcement learning**: The algorithm learns through trial and error by interacting with an environment and receiving feedback in the form of rewards or penalties.
+
+Machine learning algorithms can be used for a wide range of tasks, such as image classification, natural language processing, and predictive modeling.
+
+**Deep Learning:**
+
+Deep learning is a subset of machine learning that involves the use of artificial neural networks (ANNs) with multiple layers. ANNs are inspired by the structure and function of the human brain and are designed to mimic the way our brains process information.
+
+Deep learning algorithms are particularly well-suited for tasks that involve complex patterns in data, such as:
+
+1. **Image recognition**: Deep learning algorithms can be used to recognize objects, scenes, and actions in images.
+2. **Natural language processing**: Deep learning algorithms can be used to analyze and understand human language, including text and speech.
+3. **Speech recognition**: Deep learning algorithms can be used to recognize spoken words and phrases.
+
+The key characteristics of deep learning algorithms are:
+
+1. **Multiple layers**: Deep learning algorithms typically consist of multiple layers of interconnected nodes (neurons) that process and transform the input data.
+2. **Non-linear activation functions**: Deep learning algorithms often use non-linear activation functions, such as ReLU (Rectified Linear Unit) or sigmoid, to introduce non-linearity into the model.
+3. **Large datasets**: Deep learning algorithms typically require large amounts of data to train and achieve good performance.
+
+**Key differences:**
+
+1. **Complexity**: Deep learning algorithms are generally more complex and computationally intensive than machine learning algorithms.
+2. **Data requirements**: Deep learning algorithms typically require large amounts of data to train, while machine learning algorithms can often work with smaller datasets.
+3. **Performance**: Deep learning algorithms are often more accurate and efficient than machine learning algorithms, especially for tasks that involve complex patterns in data.
+
+In summary, machine learning is a broader field that encompasses a range of algorithms and techniques, while deep learning is a specific subset of machine learning that involves the use of artificial neural networks with multiple layers.",61.42,success,stop,577,36,10.94,100,good,No issues detected by heuristic checks,factual_quality,heuristic,Factual accuracy; Relevance to the question; Technical correctness; Clarity of explanation; Coverage of important concepts,
+52,What is cloud computing? Explain its main service models.,general,easy,llama3.2:3b,llama3.2:3b,"Cloud computing is a model for delivering computing services over the internet, where resources such as servers, storage, databases, software, and applications are provided as a service to users on-demand. Instead of having to manage and maintain their own hardware and software, users can access these resources on a pay-as-you-go basis, allowing for greater flexibility, scalability, and cost savings.
+
+There are three main service models in cloud computing:
+
+1. **Infrastructure as a Service (IaaS)**: IaaS provides virtualized computing resources, such as servers, storage, and networking, over the internet. Users can create and configure their own virtual machines, storage, and networking resources, and manage them as needed. IaaS is often used by organizations that require a high degree of control over their infrastructure and need to manage their own resources.
+
+Example: Amazon Web Services (AWS), Microsoft Azure, Google Cloud Platform (GCP)
+
+2. **Platform as a Service (PaaS)**: PaaS provides a complete platform for developing, running, and managing applications, including tools, libraries, and infrastructure. Users can focus on developing their applications without worrying about the underlying infrastructure. PaaS is often used by organizations that need to develop and deploy applications quickly, without having to manage the underlying infrastructure.
+
+Example: Google App Engine, Microsoft Azure App Service, Heroku
+
+3. **Software as a Service (SaaS)**: SaaS provides software applications over the internet, eliminating the need for users to install, configure, and maintain software on their own devices. Users can access the software applications from anywhere, on any device, and can often use them without requiring any additional setup or configuration. SaaS is often used by organizations that need to access software applications quickly and easily, without having to manage the underlying infrastructure.
+
+Example: Salesforce, Microsoft Office 365, Google Workspace
+
+Additionally, there are also other service models, such as:
+
+* **Desktop as a Service (DaaS)**: Provides virtual desktops to users, allowing them to access their desktop applications and data from anywhere.
+* **Database as a Service (DBaaS)**: Provides managed database services, allowing users to create, configure, and manage databases without having to manage the underlying infrastructure.
+* **Storage as a Service (STaaS)**: Provides managed storage services, allowing users to store and manage their data without having to manage the underlying infrastructure.
+
+In summary, cloud computing provides a flexible and scalable way for organizations to access computing resources, applications, and data over the internet, without having to manage and maintain their own hardware and software. The three main service models in cloud computing are IaaS, PaaS, and SaaS, each providing a different level of control and flexibility for users.",46.06,success,stop,549,36,12.58,100,good,No issues detected by heuristic checks,factual_quality,heuristic,Factual accuracy; Relevance to the question; Technical correctness; Clarity of explanation; Coverage of important concepts,
+53,Explain the working principles of relational databases.,general,easy,llama3.2:3b,llama3.2:3b,"Relational databases are a type of database management system (DBMS) that organizes data into tables, with each table representing a relation between different data entities. The working principles of relational databases can be explained as follows:
+
+1. **Tables**: Relational databases are based on the concept of tables, which are the basic storage units for data. Each table has a unique name and contains rows and columns. Rows represent individual records, while columns represent fields or attributes of those records.
+2. **Primary Key**: Each table has a primary key, which is a unique identifier for each row in the table. The primary key is used to uniquely identify each record and to enforce data integrity.
+3. **Foreign Keys**: Foreign keys are used to establish relationships between tables. A foreign key in one table refers to the primary key of another table. This allows for the creation of relationships between tables and enables data to be linked across tables.
+4. **Relationships**: Relationships between tables are established using foreign keys. There are three types of relationships:
+ * **One-to-One (1:1)**: One row in one table is related to one row in another table.
+ * **One-to-Many (1:N)**: One row in one table is related to multiple rows in another table.
+ * **Many-to-Many (M:N)**: Multiple rows in one table are related to multiple rows in another table.
+5. **Data Types**: Relational databases support various data types, including integers, strings, dates, and timestamps. Each data type has its own set of rules and constraints.
+6. **Constraints**: Constraints are used to enforce data integrity and ensure that data is consistent. Common constraints include:
+ * **Primary Key**: Ensures that each row has a unique primary key.
+ * **Foreign Key**: Ensures that foreign keys match the primary key of the referenced table.
+ * **Unique**: Ensures that each value in a column is unique.
+ * **Not Null**: Ensures that a column cannot contain null values.
+7. **Queries**: Queries are used to retrieve data from a relational database. Common types of queries include:
+ * **SELECT**: Retrieves data from one or more tables.
+ * **INSERT**: Inserts new data into a table.
+ * **UPDATE**: Updates existing data in a table.
+ * **DELETE**: Deletes data from a table.
+8. **Indexing**: Indexing is used to improve query performance by creating a data structure that allows for efficient retrieval of data. Indexes can be created on columns or entire tables.
+9. **Normalization**: Normalization is the process of organizing data into tables to minimize data redundancy and improve data integrity. Normalization involves dividing large tables into smaller, more manageable tables.
+
+The working principles of relational databases can be summarized as follows:
+
+1. Data is stored in tables, with each table representing a relation between different data entities.
+2. Primary keys and foreign keys are used to establish relationships between tables.
+3. Constraints are used to enforce data integrity and ensure that data is consistent.
+4. Queries are used to retrieve data from a relational database.
+5. Indexing is used to improve query performance.
+6. Normalization is used to organize data into tables to minimize data redundancy and improve data integrity.
+
+By following these principles, relational databases can provide a robust and scalable way to store and manage data.",61.23,success,stop,675,34,11.49,100,good,No issues detected by heuristic checks,factual_quality,heuristic,Factual accuracy; Relevance to the question; Technical correctness; Clarity of explanation; Coverage of important concepts,
+54,What is an operating system and what are its main functions?,general,easy,llama3.2:3b,llama3.2:3b,"An operating system (OS) is a software that manages computer hardware resources and provides a platform for running applications. It acts as an intermediary between computer hardware and user-level applications, controlling the allocation of system resources such as memory, CPU time, and storage.
+
+The main functions of an operating system include:
+
+1. **Process Management**: The OS manages the creation, execution, and termination of processes (programs) running on the computer. It schedules processes to run, allocates resources, and handles interrupts.
+2. **Memory Management**: The OS manages the allocation and deallocation of memory for running programs. It ensures that memory is used efficiently and prevents memory leaks or crashes.
+3. **File System Management**: The OS provides a file system that allows users to store and retrieve files. It manages file allocation, file access, and file security.
+4. **Input/Output (I/O) Management**: The OS manages input/output operations between devices such as keyboards, displays, and storage devices.
+5. **Security**: The OS provides mechanisms for controlling access to computer resources, such as user authentication, access control, and encryption.
+6. **Interrupt Handling**: The OS handles interrupts generated by hardware devices, such as keyboard presses or disk completion.
+7. **Resource Allocation**: The OS manages the allocation of system resources, such as CPU time, memory, and I/O devices.
+8. **Networking**: The OS manages communication between the computer and other devices on a network.
+9. **Power Management**: The OS manages the computer's power consumption, including turning off devices when not in use.
+10. **Error Handling**: The OS provides mechanisms for handling errors, such as crashes or file corruption.
+
+Some popular operating systems include:
+
+* Windows
+* macOS
+* Linux
+* Android
+* iOS
+
+In summary, an operating system is a critical component of a computer system that manages hardware resources, provides a platform for running applications, and ensures the smooth operation of the computer.",36.45,success,stop,396,37,11.66,100,good,No issues detected by heuristic checks,factual_quality,heuristic,Factual accuracy; Relevance to the question; Technical correctness; Clarity of explanation; Coverage of important concepts,
+55,Explain the difference between HTTP and HTTPS.,general,easy,llama3.2:3b,llama3.2:3b,"HTTP (Hypertext Transfer Protocol) and HTTPS (Hypertext Transfer Protocol Secure) are two protocols used for transferring data over the internet. The main difference between them is the level of security and encryption used.
+
+HTTP is an insecure protocol that sends data in plain text, making it vulnerable to interception and eavesdropping by third parties. When you enter a URL or click on a link, your browser sends a request to the server, and the server responds with the requested data. However, since the data is sent in plain text, it can be easily read by anyone who intercepts the communication.
+
+HTTPS, on the other hand, is a secure protocol that uses encryption to protect the data being transmitted. When you visit a website that uses HTTPS, your browser establishes a secure connection with the server, and all data exchanged between your browser and the server is encrypted using a secure protocol called Transport Layer Security (TLS). This means that even if someone intercepts the communication, they won't be able to read or understand the data being transmitted.
+
+The main differences between HTTP and HTTPS are:
+
+1. Security: HTTPS is more secure than HTTP because it uses encryption to protect the data being transmitted.
+2. Encryption: HTTPS uses encryption to protect the data, while HTTP sends data in plain text.
+3. Trust: HTTPS is considered more trustworthy than HTTP because it uses a secure connection to protect the data.
+4. Browser warnings: When you visit a website that uses HTTP, your browser may display a warning message indicating that the connection is not secure.
+
+In summary, HTTPS is a more secure and trustworthy protocol than HTTP, and it's recommended to use HTTPS whenever possible to protect your data and ensure a secure online experience.",32.77,success,stop,346,34,11.41,100,good,No issues detected by heuristic checks,factual_quality,heuristic,Factual accuracy; Relevance to the question; Technical correctness; Clarity of explanation; Coverage of important concepts,
+56,What is an API? Explain with an example.,general,easy,llama3.2:3b,llama3.2:3b,"An API, or Application Programming Interface, is a set of defined rules that enables different software systems to communicate with each other. It allows one system to request services or data from another system, and receive the response in a structured format.
+
+Think of an API like a messenger between two people. Imagine you're at a restaurant and you want to order food. You can't just walk into the kitchen and start making your own food, because that's not how it works. Instead, you give your order to the waiter, who takes it to the kitchen staff. They then prepare your food according to your order, and the waiter brings it back to you.
+
+In this scenario, the waiter is like an API. You (the customer) are the one making a request (ordering food), and the kitchen staff (the system) is the one providing the service (preparing food). The waiter (API) acts as a middleman, taking your request and delivering it to the kitchen staff, who then respond with the prepared food.
+
+Here's an example of how an API works:
+
+Let's say you're building a mobile app that allows users to search for restaurants in their area. You want to fetch a list of nearby restaurants from a third-party API that provides restaurant data.
+
+1. Your app makes a request to the API, saying ""Hey, can you give me a list of nearby restaurants?""
+2. The API receives the request and checks if it's valid. If it is, it responds with a list of nearby restaurants in a structured format (e.g., JSON or XML).
+3. Your app receives the response and displays the list of nearby restaurants to the user.
+
+In this example, the API is like a messenger that takes your request and delivers it to the restaurant data provider. The API provides a standardized way for your app to access the restaurant data, without having to know the details of how the data is stored or retrieved.
+
+APIs can be classified into different types, such as:
+
+* RESTful APIs (Representational State of Resource)
+* GraphQL APIs
+* SOAP APIs (Simple Object Access Protocol)
+
+Each type of API has its own strengths and weaknesses, but they all serve the same purpose: to enable different systems to communicate with each other and exchange data in a structured format.",45.0,success,stop,462,35,10.85,100,good,No issues detected by heuristic checks,factual_quality,heuristic,Factual accuracy; Relevance to the question; Technical correctness; Clarity of explanation; Coverage of important concepts,
+57,Describe the main components of computer networks.,general,easy,llama3.2:3b,llama3.2:3b,"The main components of a computer network can be broadly categorized into three layers: hardware, software, and networking protocols. Here are the main components of each layer:
+
+**Hardware Components:**
+
+1. **Devices**: These are the physical components that make up the network, such as computers, laptops, mobile devices, printers, and routers.
+2. **Network Interface Cards (NICs)**: These are hardware components that connect devices to the network, such as Ethernet cards or Wi-Fi adapters.
+3. **Switches**: These are devices that connect multiple devices together and manage data transmission between them.
+4. **Routers**: These are devices that connect multiple networks together and manage data transmission between them.
+5. **Hubs**: These are devices that connect multiple devices together and broadcast data to all connected devices.
+
+**Software Components:**
+
+1. **Operating Systems**: These are the software components that run on devices and manage their resources, such as Windows, macOS, or Linux.
+2. **Network Operating Systems**: These are specialized operating systems that manage network resources and provide network services, such as Windows Server or Linux.
+3. **Network Applications**: These are software applications that run on devices and use network resources, such as email clients, web browsers, or file sharing applications.
+4. **Network Services**: These are software services that provide network functionality, such as DNS, DHCP, or FTP.
+
+**Networking Protocols:**
+
+1. **Network Topology**: This refers to the physical or logical arrangement of devices in a network.
+2. **Network Architecture**: This refers to the design and organization of a network, including the types of devices, protocols, and services used.
+3. **Network Protocols**: These are the rules and standards that govern data transmission and communication between devices, such as TCP/IP, HTTP, or FTP.
+4. **Network Security Protocols**: These are protocols that provide security and authentication for network communication, such as SSL/TLS or SSH.
+
+**Other Components:**
+
+1. **Network Management Systems**: These are software systems that manage and monitor network resources, such as network monitoring tools or network management software.
+2. **Network Security Systems**: These are software systems that provide security and authentication for network communication, such as firewalls or intrusion detection systems.
+3. **Network Services Providers**: These are organizations that provide network services, such as internet service providers or cloud computing services.
+
+In summary, the main components of a computer network include hardware devices, software applications and operating systems, networking protocols, and other supporting systems that manage and secure network resources.",54.98,success,stop,518,33,9.86,100,good,No issues detected by heuristic checks,factual_quality,heuristic,Factual accuracy; Relevance to the question; Technical correctness; Clarity of explanation; Coverage of important concepts,
+58,Explain the concept of virtualization.,general,easy,llama3.2:3b,llama3.2:3b,"Virtualization is a technology that allows multiple virtual machines (VMs) to run on a single physical host machine, sharing its resources such as CPU, memory, and storage. This enables multiple operating systems to run concurrently on a single physical machine, increasing the efficiency and flexibility of computing resources.
+
+There are several types of virtualization:
+
+1. **Hardware Virtualization**: This type of virtualization uses a hypervisor (also known as a virtual machine monitor) to create and manage virtual machines. The hypervisor sits between the physical hardware and the virtual machines, allocating resources to each VM. Examples of hardware virtualization include VMware ESXi, Microsoft Hyper-V, and KVM.
+2. **Software Virtualization**: This type of virtualization uses software to create and manage virtual machines. The software virtualization layer sits on top of the physical hardware, creating a virtual environment for each VM. Examples of software virtualization include VMware Workstation, VirtualBox, and Parallels Desktop.
+3. **Containerization**: This type of virtualization uses containers to package and deploy applications. Containers share the same kernel as the host operating system and run as a process, but are isolated from each other and the host system. Examples of containerization include Docker, Kubernetes, and Red Hat OpenShift.
+
+Virtualization provides several benefits, including:
+
+1. **Increased resource utilization**: Virtualization allows multiple VMs to share the same physical resources, increasing the overall utilization of the hardware.
+2. **Improved flexibility**: Virtualization enables multiple operating systems to run on a single physical machine, making it easier to test and deploy different operating systems.
+3. **Enhanced security**: Virtualization provides a layer of isolation between the physical hardware and the virtual machines, reducing the risk of malware and other security threats.
+4. **Disaster recovery**: Virtualization enables easy replication and migration of VMs to different physical hosts, providing a disaster recovery solution.
+5. **Cost savings**: Virtualization can reduce the need for physical hardware, resulting in cost savings.
+
+However, virtualization also has some limitations and challenges, including:
+
+1. **Performance overhead**: Virtualization can introduce performance overhead due to the overhead of the hypervisor or virtualization layer.
+2. **Resource allocation**: Virtualization requires careful resource allocation to ensure that each VM has enough resources to run efficiently.
+3. **Security risks**: Virtualization introduces new security risks, such as the risk of VM escape or hypervisor compromise.
+4. **Complexity**: Virtualization can add complexity to the IT infrastructure, requiring specialized skills and knowledge to manage and maintain.
+
+In summary, virtualization is a powerful technology that enables multiple virtual machines to run on a single physical host machine, increasing the efficiency and flexibility of computing resources. While it provides several benefits, it also has some limitations and challenges that must be carefully managed.",55.09,success,stop,571,33,10.85,100,good,No issues detected by heuristic checks,factual_quality,heuristic,Factual accuracy; Relevance to the question; Technical correctness; Clarity of explanation; Coverage of important concepts,
+59,What is cybersecurity and why is it important?,general,medium,llama3.2:3b,llama3.2:3b,"Cybersecurity refers to the practices, technologies, and processes designed to protect computer systems, networks, and sensitive information from unauthorized access, use, disclosure, disruption, modification, or destruction. It involves the use of various security measures to prevent, detect, and respond to cyber threats, such as hacking, malware, phishing, and other types of cyber attacks.
+
+Cybersecurity is important for several reasons:
+
+1. **Protection of sensitive information**: Cybersecurity helps protect sensitive information, such as personal data, financial information, and confidential business data, from being accessed or stolen by unauthorized individuals.
+2. **Prevention of financial loss**: Cybersecurity measures can help prevent financial losses due to cyber attacks, such as data breaches, identity theft, and ransomware attacks.
+3. **Protection of reputation**: Cybersecurity helps protect an organization's reputation by preventing cyber attacks that could compromise its brand, customer trust, and business operations.
+4. **Compliance with regulations**: Cybersecurity is essential for organizations to comply with various regulations, such as GDPR, HIPAA, and PCI-DSS, which require the protection of sensitive information.
+5. **National security**: Cybersecurity is critical for national security, as cyber attacks can compromise critical infrastructure, disrupt government services, and threaten national security.
+6. **Personal safety**: Cybersecurity is also important for personal safety, as individuals can be vulnerable to cyber attacks, such as phishing, malware, and ransomware, which can compromise their personal data and financial information.
+
+Some common types of cyber threats include:
+
+1. **Malware**: Software designed to harm or exploit a computer system.
+2. **Phishing**: Scams that use email, text messages, or other forms of communication to trick individuals into revealing sensitive information.
+3. **Ransomware**: Malware that demands payment in exchange for restoring access to data or systems.
+4. **Denial of Service (DoS) attacks**: Cyber attacks that overwhelm a system or network, making it unavailable to users.
+5. **Advanced Persistent Threats (APTs)**: Sophisticated cyber attacks that use multiple vectors to breach a system or network.
+
+To protect against these threats, organizations and individuals can implement various cybersecurity measures, such as:
+
+1. **Firewalls**: Network security systems that monitor and control incoming and outgoing network traffic.
+2. **Antivirus software**: Software that detects and removes malware from a computer system.
+3. **Encryption**: Techniques that scramble data to protect it from unauthorized access.
+4. **Password management**: Best practices for creating and managing strong passwords.
+5. **Regular security updates**: Keeping software and systems up to date with the latest security patches and updates.
+
+In summary, cybersecurity is essential for protecting sensitive information, preventing financial losses, protecting reputation, and ensuring compliance with regulations. It is also critical for national security and personal safety.",71.74,success,stop,574,34,8.29,100,good,No issues detected by heuristic checks,factual_quality,heuristic,Factual accuracy; Relevance to the question; Technical correctness; Clarity of explanation; Coverage of important concepts,
+60,Explain the difference between SQL and NoSQL databases.,general,medium,llama3.2:3b,llama3.2:3b,"SQL (Structured Query Language) and NoSQL (Not Only SQL) are two types of database management systems that differ in their approach to storing and managing data.
+
+**SQL Databases**
+
+SQL databases, also known as relational databases, use a fixed schema to store data. The schema is defined before data is inserted, and it consists of tables with well-defined relationships between them. SQL databases use a structured query language (SQL) to manage and manipulate data.
+
+Characteristics of SQL databases:
+
+1. **Fixed schema**: The schema is defined before data is inserted.
+2. **Relational model**: Data is stored in tables with well-defined relationships between them.
+3. **ACID compliance**: SQL databases follow the Atomicity, Consistency, Isolation, and Durability (ACID) principles to ensure data consistency and reliability.
+4. **Supports transactions**: SQL databases support transactions, which allow multiple operations to be executed as a single, all-or-nothing unit.
+
+Examples of SQL databases include:
+
+* MySQL
+* PostgreSQL
+* Microsoft SQL Server
+* Oracle
+
+**NoSQL Databases**
+
+NoSQL databases, also known as non-relational databases, do not use a fixed schema to store data. Instead, they use a flexible schema or no schema at all. NoSQL databases are designed to handle large amounts of unstructured or semi-structured data.
+
+Characteristics of NoSQL databases:
+
+1. **Flexible schema**: The schema is not defined before data is inserted.
+2. **Non-relational model**: Data is stored in a variety of formats, such as key-value pairs, documents, or graphs.
+3. **No ACID compliance**: NoSQL databases do not follow the ACID principles, which means they may sacrifice some data consistency and reliability for higher performance and scalability.
+4. **Supports high availability**: NoSQL databases are designed to handle high availability and scalability, making them suitable for large-scale applications.
+
+Examples of NoSQL databases include:
+
+* MongoDB
+* Cassandra
+* Redis
+* Couchbase
+
+**Key differences**
+
+1. **Schema flexibility**: SQL databases have a fixed schema, while NoSQL databases have a flexible schema or no schema at all.
+2. **Data structure**: SQL databases use a relational model, while NoSQL databases use a non-relational model.
+3. **ACID compliance**: SQL databases follow ACID principles, while NoSQL databases do not.
+4. **Scalability**: NoSQL databases are designed to handle high availability and scalability, making them suitable for large-scale applications.
+
+In summary, SQL databases are suitable for applications that require strong data consistency and reliability, while NoSQL databases are suitable for applications that require high availability, scalability, and flexibility in data structure.",65.21,success,stop,550,36,8.77,100,good,No issues detected by heuristic checks,factual_quality,heuristic,Factual accuracy; Relevance to the question; Technical correctness; Clarity of explanation; Coverage of important concepts,
+61,What is data normalization in databases?,general,medium,llama3.2:3b,llama3.2:3b,"Data normalization in databases is the process of organizing data in a way that minimizes data redundancy and dependency. The goal of normalization is to ensure that each piece of data is stored in one place and one place only, making it easier to maintain and update the data.
+
+Normalization involves dividing large tables into smaller, more manageable tables, and linking them together through relationships. This process helps to:
+
+1. Eliminate data redundancy: By storing each piece of data in one place, you avoid duplicating data and reduce the risk of inconsistencies.
+2. Reduce data dependency: By breaking down large tables into smaller ones, you reduce the dependency between tables, making it easier to modify or update data without affecting other parts of the database.
+3. Improve data integrity: Normalization helps to ensure that data is consistent and accurate, reducing the risk of errors and inconsistencies.
+
+There are several normalization rules, including:
+
+1. First Normal Form (1NF): Each table cell must contain a single value, and each row must be unique.
+2. Second Normal Form (2NF): Each non-key attribute must depend on the entire primary key, not just one part of it.
+3. Third Normal Form (3NF): If a table is in 2NF, and a non-key attribute depends on another non-key attribute, then it should be moved to a separate table.
+4. Boyce-Codd Normal Form (BCNF): A table is in BCNF if and only if it is in 3NF and there are no transitive dependencies.
+
+Normalization is an essential step in database design, as it helps to ensure that data is organized in a way that is efficient, scalable, and maintainable.
+
+Here's an example of how normalization can help:
+
+Suppose we have a table called ""Orders"" that contains the following columns:
+
+| Order ID | Customer ID | Order Date | Product ID | Quantity |
+| --- | --- | --- | --- | --- |
+| 1 | 1 | 2022-01-01 | 1 | 2 |
+| 1 | 1 | 2022-01-01 | 2 | 3 |
+| 2 | 2 | 2022-01-15 | 1 | 1 |
+
+In this example, the ""Orders"" table contains duplicate data for the same customer and order date. By normalizing the data, we can create separate tables for ""Customers"", ""Orders"", and ""Order Details"" like this:
+
+**Customers**
+
+| Customer ID | Name |
+| --- | --- |
+| 1 | John Doe |
+| 2 | Jane Smith |
+
+**Orders**
+
+| Order ID | Customer ID | Order Date |
+| --- | --- | --- |
+| 1 | 1 | 2022-01-01 |
+| 2 | 2 | 2022-01-15 |
+
+**Order Details**
+
+| Order ID | Product ID | Quantity |
+| --- | --- | --- |
+| 1 | 1 | 2 |
+| 1 | 2 | 3 |
+| 2 | 1 | 1 |
+
+By normalizing the data, we have eliminated data redundancy and improved data integrity.",683.81,success,stop,644,32,11.49,100,good,No issues detected by heuristic checks,factual_quality,heuristic,Factual accuracy; Relevance to the question; Technical correctness; Clarity of explanation; Coverage of important concepts,
+62,Explain the purpose of version control systems.,general,medium,llama3.2:3b,llama3.2:3b,"The primary purpose of version control systems (VCS) is to manage changes to digital content, such as source code, documents, or other files, over time. VCS allows developers, teams, and individuals to track changes, collaborate, and maintain a record of all modifications made to a project or file.
+
+The main goals of version control systems are:
+
+1. **Change tracking**: To keep a record of all changes made to a file or project, including who made the changes, when, and what changes were made.
+2. **Collaboration**: To enable multiple people to work on the same project simultaneously, without conflicts or overwriting each other's changes.
+3. **Reversion**: To easily revert to a previous version of a file or project if something goes wrong or if changes need to be undone.
+4. **Branching and merging**: To create separate versions of a project (called branches) and merge changes from one branch to another, allowing for parallel development and integration of changes.
+5. **Backup and recovery**: To provide a backup of the project or file, in case of data loss or corruption.
+
+Version control systems provide several benefits, including:
+
+1. **Improved collaboration**: VCS enables multiple people to work together on a project, reducing errors and increasing productivity.
+2. **Version management**: VCS helps manage different versions of a file or project, making it easier to identify and revert to previous versions.
+3. **Change history**: VCS provides a clear record of all changes made to a file or project, making it easier to understand the evolution of the project.
+4. **Reduced errors**: VCS helps reduce errors by allowing developers to review and compare changes before committing them to the main codebase.
+5. **Increased security**: VCS provides a secure way to manage and track changes, reducing the risk of data loss or corruption.
+
+Some popular version control systems include:
+
+1. Git
+2. Subversion (SVN)
+3. Mercurial
+4. Perforce
+5. Team Foundation Server (TFS)
+
+In summary, version control systems are essential tools for managing changes to digital content, enabling collaboration, and maintaining a record of all modifications made to a project or file.",34.85,success,stop,450,34,13.93,100,good,No issues detected by heuristic checks,factual_quality,heuristic,Factual accuracy; Relevance to the question; Technical correctness; Clarity of explanation; Coverage of important concepts,
+63,Describe the software development life cycle.,general,medium,llama3.2:3b,llama3.2:3b,"The software development life cycle (SDLC) is a series of stages that a software development project goes through from conception to delivery. The SDLC is a structured approach to managing the development of software, and it helps ensure that the software meets the requirements of the stakeholders and is delivered on time, within budget, and with the required quality.
+
+The typical stages of the SDLC are:
+
+1. **Requirements Gathering**: This stage involves identifying and documenting the requirements of the software. This includes gathering input from stakeholders, customers, and end-users to understand their needs and expectations.
+2. **Analysis**: In this stage, the requirements are analyzed to identify the functional and non-functional requirements of the software. This includes creating a detailed analysis of the software's features, functionality, and performance.
+3. **Design**: The design stage involves creating a detailed design of the software, including the architecture, user interface, and user experience. This stage also includes creating a prototype of the software to test its feasibility.
+4. **Implementation**: In this stage, the software is developed according to the design specifications. This includes writing the code, testing the software, and integrating it with other systems.
+5. **Testing**: The testing stage involves verifying that the software meets the requirements and works as expected. This includes unit testing, integration testing, and user acceptance testing (UAT).
+6. **Deployment**: In this stage, the software is deployed to the production environment, and the deployment plan is executed.
+7. **Maintenance**: The maintenance stage involves ongoing maintenance and support of the software, including fixing bugs, updating the software, and ensuring that it continues to meet the changing needs of the stakeholders.
+
+Other stages that may be included in the SDLC are:
+
+* **Feasibility Study**: A study to determine whether a software project is feasible and whether it meets the requirements of the stakeholders.
+* **Proof of Concept (POC)**: A small-scale prototype of the software to test its feasibility and gather feedback from stakeholders.
+* **Alpha and Beta Testing**: Testing of the software with a small group of users to identify and fix bugs before the final release.
+* **Release Management**: The process of managing the release of the software, including planning, executing, and monitoring the release.
+
+The SDLC is a flexible framework that can be adapted to suit the specific needs of the software development project. It provides a structured approach to managing the development of software, and it helps ensure that the software meets the requirements of the stakeholders and is delivered on time, within budget, and with the required quality.
+
+Here are some key benefits of the SDLC:
+
+* **Improved Quality**: The SDLC helps ensure that the software meets the requirements of the stakeholders and is delivered with the required quality.
+* **Reduced Risk**: The SDLC helps identify and mitigate risks early in the development process, reducing the likelihood of project failure.
+* **Increased Efficiency**: The SDLC provides a structured approach to managing the development of software, reducing the time and effort required to complete the project.
+* **Better Communication**: The SDLC helps ensure that all stakeholders are informed and involved throughout the development process, reducing the risk of misunderstandings and miscommunication.
+* **Improved Customer Satisfaction**: The SDLC helps ensure that the software meets the needs and expectations of the stakeholders, improving customer satisfaction.",50.61,success,stop,670,32,13.9,100,good,No issues detected by heuristic checks,factual_quality,heuristic,Factual accuracy; Relevance to the question; Technical correctness; Clarity of explanation; Coverage of important concepts,
+64,What are containers and how does Docker work?,general,medium,llama3.2:3b,llama3.2:3b,"**What are Containers?**
+
+Containers are lightweight and portable packages of software that include everything an application needs to run, such as code, libraries, and dependencies. They are similar to virtual machines, but unlike VMs, containers share the same kernel and don't require a separate operating system instance for each container.
+
+**Key Characteristics of Containers:**
+
+1. **Lightweight**: Containers are much lighter than VMs, as they don't require a separate operating system instance.
+2. **Portable**: Containers are highly portable and can run on any system that supports the container runtime, without requiring modifications.
+3. **Isolated**: Containers provide a high level of isolation between applications, ensuring that one application cannot affect another.
+4. **Efficient**: Containers use fewer resources than VMs, making them more efficient in terms of CPU, memory, and storage usage.
+
+**How Docker Works**
+
+Docker is a containerization platform that provides a way to package, ship, and run applications in containers. Here's a high-level overview of how Docker works:
+
+1. **Docker Image**: A Docker image is a template for a container. It includes the application code, libraries, and dependencies, as well as the configuration and settings needed to run the application.
+2. **Docker Container**: A Docker container is a runtime instance of a Docker image. It provides a isolated environment for the application to run in, with its own file system, network stack, and process space.
+3. **Docker Client**: The Docker client is a command-line tool that allows you to create, manage, and run containers.
+4. **Docker Daemon**: The Docker daemon is a background process that manages the creation, execution, and deletion of containers.
+
+**The Docker Workflow**
+
+Here's a step-by-step overview of the Docker workflow:
+
+1. **Create a Docker Image**: You create a Docker image by writing a Dockerfile, which specifies the instructions for building the image.
+2. **Build the Docker Image**: You build the Docker image using the Docker client, which downloads the required dependencies and builds the image.
+3. **Create a Docker Container**: You create a Docker container from the Docker image using the Docker client.
+4. **Run the Docker Container**: You run the Docker container using the Docker client, which starts the container and executes the application.
+5. **Manage the Docker Container**: You manage the Docker container using the Docker client, which allows you to stop, restart, and delete the container as needed.
+
+**Benefits of Docker**
+
+Docker provides several benefits, including:
+
+1. **Improved Security**: Containers provide a high level of isolation between applications, ensuring that one application cannot affect another.
+2. **Increased Efficiency**: Containers use fewer resources than VMs, making them more efficient in terms of CPU, memory, and storage usage.
+3. **Simplified Deployment**: Docker provides a simple way to deploy applications, as containers can be easily created, managed, and scaled.
+4. **Portability**: Containers are highly portable and can run on any system that supports the container runtime, without requiring modifications.",48.31,success,stop,624,34,13.63,100,good,No issues detected by heuristic checks,factual_quality,heuristic,Factual accuracy; Relevance to the question; Technical correctness; Clarity of explanation; Coverage of important concepts,
+65,Explain the difference between public and private clouds.,general,medium,llama3.2:3b,llama3.2:3b,"Public clouds and private clouds are two types of cloud computing models that differ in their deployment, management, and security.
+
+**Public Clouds:**
+
+Public clouds are multi-tenant cloud services that are open to the general public. They are owned and operated by a third-party provider, such as Amazon Web Services (AWS), Microsoft Azure, or Google Cloud Platform (GCP). Public clouds are scalable, on-demand, and pay-as-you-go, making them an attractive option for businesses and individuals who need flexible and cost-effective computing resources.
+
+Characteristics of public clouds:
+
+1. Multi-tenant: Multiple customers share the same physical infrastructure.
+2. Scalable: Resources can be scaled up or down as needed.
+3. On-demand: Resources can be provisioned and de-provisioned at any time.
+4. Pay-as-you-go: Users only pay for the resources they use.
+5. Shared infrastructure: Resources are shared among multiple customers.
+
+**Private Clouds:**
+
+Private clouds, also known as on-premises clouds, are cloud computing environments that are provisioned and managed within an organization's premises. They are typically owned and operated by the organization itself, and are not shared with other customers.
+
+Characteristics of private clouds:
+
+1. Single-tenant: Only one customer uses the infrastructure.
+2. Scalable: Resources can be scaled up or down as needed.
+3. On-demand: Resources can be provisioned and de-provisioned at any time.
+4. Pay-as-you-go: Users only pay for the resources they use.
+5. Dedicated infrastructure: Resources are dedicated to a single customer.
+
+**Key differences:**
+
+1. **Security:** Private clouds are generally considered more secure than public clouds, as they are not shared with other customers and are subject to the organization's security policies.
+2. **Control:** Private clouds provide more control over the infrastructure and resources, as the organization is responsible for managing and maintaining the environment.
+3. **Cost:** Private clouds can be more expensive than public clouds, as the organization is responsible for the costs of maintaining and managing the infrastructure.
+4. **Scalability:** Public clouds are often more scalable than private clouds, as they can quickly provision and de-provision resources as needed.
+5. **Flexibility:** Public clouds offer more flexibility and mobility, as users can access resources from anywhere and on any device.
+
+In summary, public clouds are a good option for businesses and individuals who need flexible and cost-effective computing resources, while private clouds are a better choice for organizations that require more control over their infrastructure and security.",41.3,success,stop,519,35,13.37,100,good,No issues detected by heuristic checks,factual_quality,heuristic,Factual accuracy; Relevance to the question; Technical correctness; Clarity of explanation; Coverage of important concepts,
+66,What is an IP address and how does DNS work?,general,medium,llama3.2:3b,llama3.2:3b,"I'd be happy to explain IP addresses and DNS in detail.
+
+**What is an IP Address?**
+
+An IP address (Internet Protocol address) is a unique numerical label assigned to each device connected to a computer network that uses the Internet Protocol to communicate. IP addresses are used to identify and locate devices on a network, allowing them to communicate with each other.
+
+There are two main types of IP addresses:
+
+1. **IPv4 (Internet Protocol version 4)**: This is the oldest and most widely used IP address format. It consists of four numbers separated by dots (e.g., 192.0.2.1). IPv4 addresses are limited to 4.3 billion unique addresses.
+2. **IPv6 (Internet Protocol version 6)**: This is the newer and more modern IP address format. It consists of eight groups of four hexadecimal digits separated by colons (e.g., 2001:0db8:85a3:0000:0000:8a2e:0370:7334). IPv6 addresses are virtually unlimited, providing a much larger address space than IPv4.
+
+**How Does DNS Work?**
+
+DNS (Domain Name System) is a system that translates human-readable domain names into IP addresses that computers can understand. Here's how it works:
+
+1. **Domain Name**: When you type a website's domain name into your browser, your device sends a request to a DNS resolver (usually provided by your internet service provider or operating system).
+2. **DNS Query**: The DNS resolver breaks down the domain name into its constituent parts (e.g., example.com).
+3. **Root DNS Server**: The DNS resolver sends the query to a root DNS server, which is responsible for directing the query to the correct top-level domain (TLD) server.
+4. **TLD Server**: The TLD server directs the query to the TLD server for the specific domain (e.g., .com).
+5. **Authoritative DNS Server**: The TLD server directs the query to the authoritative DNS server for the specific domain (e.g., the DNS server for example.com).
+6. **IP Address Response**: The authoritative DNS server responds with the IP address associated with the domain name.
+7. **IP Address Resolution**: Your device uses the IP address to connect to the website's server.
+
+**DNS Cache**
+
+To improve performance, DNS resolvers often cache the results of DNS queries. This means that if you visit the same website multiple times, the DNS resolver will retrieve the IP address from the cache instead of requerying the DNS servers. This reduces the time it takes to resolve domain names and improves overall performance.
+
+In summary, IP addresses are used to identify and locate devices on a network, while DNS is a system that translates human-readable domain names into IP addresses that computers can understand.",45.31,success,stop,576,36,13.45,100,good,No issues detected by heuristic checks,factual_quality,heuristic,Factual accuracy; Relevance to the question; Technical correctness; Clarity of explanation; Coverage of important concepts,
+67,Explain the role of a compiler and interpreter.,general,medium,llama3.2:3b,llama3.2:3b,"A compiler and an interpreter are two types of software tools that play crucial roles in the process of translating source code written in a high-level programming language into machine code that can be executed directly by the computer's processor.
+
+**Compiler:**
+
+A compiler is a software tool that translates source code written in a high-level programming language (such as C, C++, or Java) into machine code that can be executed directly by the computer's processor. The compilation process involves the following steps:
+
+1. **Lexical Analysis**: The compiler breaks the source code into individual tokens, such as keywords, identifiers, and symbols.
+2. **Syntax Analysis**: The compiler checks the syntax of the source code to ensure that it conforms to the language's rules and structure.
+3. **Semantic Analysis**: The compiler checks the semantics of the source code to ensure that it is correct and makes sense.
+4. **Intermediate Code Generation**: The compiler generates intermediate code, such as assembly code or bytecode, that can be executed by the computer's processor.
+5. **Machine Code Generation**: The compiler translates the intermediate code into machine code that can be executed directly by the computer's processor.
+
+**Interpreter:**
+
+An interpreter is a software tool that translates source code written in a high-level programming language (such as Python, JavaScript, or Ruby) into machine code that can be executed directly by the computer's processor, without the need for compilation. The interpretation process involves the following steps:
+
+1. **Lexical Analysis**: The interpreter breaks the source code into individual tokens, such as keywords, identifiers, and symbols.
+2. **Syntax Analysis**: The interpreter checks the syntax of the source code to ensure that it conforms to the language's rules and structure.
+3. **Semantic Analysis**: The interpreter checks the semantics of the source code to ensure that it is correct and makes sense.
+4. **Execution**: The interpreter executes the source code directly, without generating intermediate code or machine code.
+
+**Key differences:**
+
+1. **Compilation vs. Interpretation**: Compilation involves translating source code into machine code, while interpretation involves executing source code directly without translation.
+2. **Performance**: Compiled code is typically faster than interpreted code, since it can be executed directly by the computer's processor.
+3. **Flexibility**: Interpreted code can be modified and executed without recompilation, while compiled code requires recompilation before it can be executed.
+
+**When to use each:**
+
+1. **Use a compiler** when:
+ * You need to write code that can be executed efficiently and quickly.
+ * You need to write code that can be compiled into a standalone executable.
+ * You are working with a language that is designed for compilation, such as C or C++.
+2. **Use an interpreter** when:
+ * You need to write code that can be executed quickly and dynamically.
+ * You need to write code that can be modified and executed without recompilation.
+ * You are working with a language that is designed for interpretation, such as Python or JavaScript.",49.72,success,stop,608,35,12.87,100,good,No issues detected by heuristic checks,factual_quality,heuristic,Factual accuracy; Relevance to the question; Technical correctness; Clarity of explanation; Coverage of important concepts,
+68,What is big data? Describe its characteristics.,general,hard,deepseek-r1:1.5b,deepseek-r1:1.5b,"Big data is a comprehensive concept encompassing a large, dynamic, and high-quality collection of data. It is characterized by three main aspects: high volume, high velocity, and high quality. These characteristics are achieved through the use of specialized systems and tools, such as big data platforms like Hadoop, Spark, and Flink, which process data in real-time across multiple locations. The challenges associated with big data include scalability, data security, integration of diverse data sources, and handling the dynamic nature of the data. The applications of big data span various industries, including healthcare, finance, retail, and social media. The future of big data is promising, but it requires careful infrastructure support to address challenges like data privacy and security. In essence, big data is a powerful tool for extracting insights from dynamic, high-quality data, with significant implications for decision-making across industries.",63.38,success,stop,1304,12,23.21,100,good,No issues detected by heuristic checks,factual_quality,heuristic,Factual accuracy; Relevance to the question; Technical correctness; Clarity of explanation; Coverage of important concepts,
+69,Explain the concept of data warehousing.,general,hard,deepseek-r1:1.5b,deepseek-r1:1.5b,"Data warehousing is a data management strategy that involves organizing and managing large datasets into a structured format to support analytical tasks. It is primarily used for business intelligence and decision-making, enabling companies to extract insights and make informed decisions efficiently.
+
+**Key Components of Data Warehousing:**
+
+1. **Structured Data Repository:** Data warehouses are built around a central, structured database that organizes data into a specific schema. This structure allows for efficient querying and analysis.
+
+2. **Extract, Transform, Load (ETL) Process:** This process is used to extract raw data from various sources, transform it into a usable format, and load it into the database. Tools like Apache Hadoop and Apache Spark are often used for big data processing.
+
+3. **Data Structure:** The data is stored in a specific schema, which can be relational or non-relational, depending on the needs of the organization.
+
+4. **Efficient Analysis:** The structured data allows for quick analysis and reporting, making it ideal for business intelligence tasks.
+
+**Benefits of Data Warehousing:**
+
+- **Efficiency in Analytics:** The structured data is optimized for querying and analysis, reducing the need for multiple databases and associated costs.
+- **Scalability:** Data warehouses can handle increasing data volumes, making them suitable for large-scale operations.
+- **Cost-Effective:** Centralized data storage reduces the need for multiple databases and associated costs.
+
+**Comparison with Data Lakes:**
+
+- **Data Storage:** Data lakes are fragmented and more suited for quick access, while data warehouses are structured for analysis.
+- **Use Cases:** Data lakes are ideal for real-time data and quick access, whereas data warehouses are used for business intelligence and analytics.
+
+**Conclusion:**
+
+Data warehousing is a critical component of the data management ecosystem, providing a centralized, structured data repository that supports analytical tasks. It is used to store and manage data for decision-making, enabling businesses to extract insights efficiently. Companies must choose between data warehouses and data lakes based on their specific needs, such as data volume, access frequency, and analysis requirements.",57.63,success,stop,1339,12,24.19,100,good,No issues detected by heuristic checks,factual_quality,heuristic,Factual accuracy; Relevance to the question; Technical correctness; Clarity of explanation; Coverage of important concepts,
+70,What is an operating system kernel?,general,hard,deepseek-r1:1.5b,deepseek-r1:1.5b,,139.23,failed,,0,0,0,0,poor,Evaluation failed,factual_quality,heuristic,Factual accuracy; Relevance to the question; Technical correctness; Clarity of explanation; Coverage of important concepts,Ollama returned an empty response
+71,Describe the fundamentals of distributed computing.,general,hard,deepseek-r1:1.5b,deepseek-r1:1.5b,"The fundamentals of distributed computing encompass a comprehensive set of concepts and principles that are essential for designing and implementing systems that operate across multiple nodes. Here's an organized overview of these key areas:
+
+1. **Network Model**: 
+   - **Message Passing**: Nodes communicate by sending and receiving messages, which is common in distributed systems.
+   - **Shared Memory Model**: Nodes share a common memory, often used in systems where consistency across all nodes is crucial.
+
+2. **Concurrent Computing**:
+   - **Synchronization Mechanisms**: Techniques like locks and barriers ensure data access is synchronized, managing concurrency in distributed environments.
+
+3. **Distributed Algorithms**:
+   - **Core Algorithms**: Includes leader election, consensus algorithms, and leader election algorithms, which are fundamental for coordinating tasks across multiple nodes.
+
+4. **System Types**:
+   - **Synchronous vs. Asynchronous Systems**: Synchronous systems have fixed timing, while asynchronous systems are more flexible but harder to design.
+
+5. **Consistency and Fault Tolerance**:
+   - **Consistency Levels**: Achieve eventual consistency where all nodes eventually agree on data, and partial consistency where only some nodes are consistent.
+   - **Fault Tolerance**: Includes fail-safes, fail-unknowns, and fail-unknowns, ensuring systems can recover from failures.
+
+6. **Network Topology**:
+   - **Common Topologies**: Mesh, ring, and star topologies offer different trade-offs between communication speed and fault tolerance.
+
+7. **Security**:
+   - **Security Mechanisms**: Includes data security, access control, and integrity, managed together through encryption and access control mechanisms.
+
+8. **Performance**:
+   - **Communication and Load Balancing**: Efficient communication ensures timely message delivery, while load balancing ensures nodes aren't overwhelmed.
+
+9. **Scalability**:
+   - **System Growth**: Focuses on handling more nodes or work, crucial for large-scale systems.
+
+10. **Autonomy**:
+    - **Node Independence**: Nodes operate independently, ensuring security and fault tolerance without relying on a central authority.
+
+11. **Interoperability**:
+    - **Communication**: Achieved through standard protocols, APIs, or common layers like REST or RESTful APIs.
+
+12. **Future Trends**:
+    - **Emerging Technologies**:",74.81,incomplete,length,1536,10,21.17,100,good,No issues detected by heuristic checks,factual_quality,heuristic,Factual accuracy; Relevance to the question; Technical correctness; Clarity of explanation; Coverage of important concepts,
+72,Explain RESTful web services.,general,hard,deepseek-r1:1.5b,deepseek-r1:1.5b,"RESTful web services are HTTP/1.1 implementations that utilize the REST protocol to describe resources and their properties. These services are designed to be easily parsed and used across various applications, making them ideal for building APIs. RESTful APIs typically use JSON to structure both the request and response bodies, employing HTTP methods such as GET and POST. 
+
+Key features of RESTful services include:
+- **JSON Structure**: Responses and requests are often in JSON format, which is straightforward to parse.
+- **HTTP Methods**: They use HTTP/1.1, which is more reliable than HTTP/1.0.
+- **Ease of Parsing**: RESTful services are parsed using HTTP methods, enhancing accessibility for developers.
+
+However, they may require adjustments for older browsers that don't support HTTP/1.1, and not all APIs are RESTful. Despite these limitations, RESTful is widely supported and beneficial for many applications.",34.0,success,stop,734,10,23.07,100,good,No issues detected by heuristic checks,factual_quality,heuristic,Factual accuracy; Relevance to the question; Technical correctness; Clarity of explanation; Coverage of important concepts,
+73,What is database indexing and why is it useful?,general,hard,deepseek-r1:1.5b,deepseek-r1:1.5b,"Database indexing is a fundamental feature that enhances the efficiency and performance of a database system. Here's a structured overview of what it is and why it's useful:
+
+### What is Database Indexing?
+Database indexing organizes data in a way that allows the database system to retrieve information more quickly. It reduces the time spent on searching and improves data integrity by ensuring data is stored in a logical and organized manner.
+
+### Why is Indexing Useful?
+
+1. **Faster Query Times**: Indexes enable the database system to find data more quickly, reducing the time required for queries. This leads to faster execution of SQL statements and applications.
+
+2. **Reduced Database Calls**: By directly pointing to data, indexes minimize the number of database calls needed for searches. This reduces the overall processing time and enhances performance.
+
+3. **Data Integrity**: Indexes help in detecting errors or inconsistencies in data. They can quickly identify missing or invalid records, ensuring data accuracy and integrity.
+
+4. **Efficient Data Organization**: Indexes organize data in a way that optimizes access, making it easier to manage and retrieve information efficiently.
+
+### Types of Indexes
+- **Physical Index**: Stored on the physical storage, such as in a database table.
+- **Virtual Index**: Stored on disk, used for faster access to data.
+
+### Trade-offs and Considerations
+- **Setup Time**: Indexing requires initial setup, which can be time-consuming.
+- **Data Frequency**: Indexes remain relevant even with frequent updates, as they are designed to handle changes.
+- **Database Management Systems**: Different systems may handle indexing differently, with some offering more advanced capabilities.
+
+### Conclusion
+Database indexing is crucial for improving query performance, reducing data calls, and ensuring data integrity. While it requires initial setup, the long-term benefits make it a valuable feature for enhancing database efficiency and effectiveness.",48.85,success,stop,1033,13,22.17,100,good,No issues detected by heuristic checks,factual_quality,heuristic,Factual accuracy; Relevance to the question; Technical correctness; Clarity of explanation; Coverage of important concepts,
+74,Explain the difference between supervised and unsupervised learning.,general,hard,deepseek-r1:1.5b,deepseek-r1:1.5b,"**Supervised vs. Unsupervised Learning: A Comprehensive Overview**
+
+**1. Data Type:**
+- **Supervised Learning:** Utilizes labeled data, where the data includes input features and corresponding output labels.
+- **Unsupervised Learning:** Works with unlabeled data, where the algorithm identifies patterns without prior knowledge of the output.
+
+**2. Goal:**
+- **Supervised Learning:** Focuses on predicting or classifying outputs based on input data.
+- **Unsupervised Learning:** Aims to discover hidden patterns, groupings, or structures within the data.
+
+**3. Algorithms:**
+- **Supervised Learning:** Decision trees, support vector machines, and neural networks.
+- **Unsupervised Learning:** Clustering algorithms (k-means, hierarchical), dimensionality reduction (PCA), and association rule learning.
+
+**4. Examples:**
+- **Supervised Learning:** Spam detection, customer segmentation.
+- **Unsupervised Learning:** Image segmentation, customer segmentation, finding groups in unlabeled data.
+
+**Summary:**
+Supervised learning uses labeled data to predict outcomes, while unsupervised learning identifies patterns in unlabeled data. Both are essential in machine learning, with supervised learning being more about prediction and unsupervised about discovery.",45.21,success,stop,908,15,21.14,100,good,No issues detected by heuristic checks,factual_quality,heuristic,Factual accuracy; Relevance to the question; Technical correctness; Clarity of explanation; Coverage of important concepts,
+75,Describe the importance of software testing.,general,hard,deepseek-r1:1.5b,deepseek-r1:1.5b,"Software testing is a fundamental aspect of software development that plays a crucial role in ensuring the quality and reliability of software. Here are the key points that highlight its importance:
+
+1. **Early Bug Detection**: Testing helps identify bugs early in the development process. By running the software through various tests, bugs are caught before they cause issues, preventing potential disasters.
+
+2. **Reliability and Trustworthiness**: Testing ensures that the software works correctly and consistently. It builds trust in the software, making it more trustworthy for users and stakeholders.
+
+3. **Early Improvement**: Testing allows for early identification and fixing of bugs. Once identified, these issues can be addressed, leading to improvements in the software.
+
+4. **Continuous Improvement**: Testing is an ongoing process. As software evolves, it must be continuously tested to ensure it remains functional and bug-free.
+
+5. **User Satisfaction**: Testing ensures the software works well and is user-friendly. It helps users interact with the software smoothly, enhancing their experience.
+
+6. **Cost Efficiency**: Thorough testing can prevent bugs, which can lead to significant costs in the long run. It ensures the software works correctly, avoiding potential issues.
+
+7. **Understanding Software Behavior**: Testing provides insights into the software's behavior, helping developers understand how it works and identify any issues that might not be obvious.
+
+In summary, software testing is essential for catching bugs early, ensuring reliability, improving the software, and ensuring user satisfaction. It is a continuous process that contributes to the overall quality and success of software development.",46.7,success,stop,980,10,22.03,100,good,No issues detected by heuristic checks,factual_quality,heuristic,Factual accuracy; Relevance to the question; Technical correctness; Clarity of explanation; Coverage of important concepts,
+76,"Summarize in three sentences: Artificial intelligence is transforming industries through automation, predictive analytics and intelligent decision-making. Machine learning helps systems identify patterns, while deep learning uses neural networks to solve complex problems.",summarization,easy,llama3.2:3b,llama3.2:3b,"Artificial intelligence (AI) is revolutionizing industries by leveraging automation, predictive analytics, and intelligent decision-making to increase efficiency and productivity. Machine learning and deep learning technologies enable systems to identify patterns and solve complex problems, respectively, allowing for more accurate and informed decision-making. By harnessing the power of AI, industries can transform and adapt to changing market conditions, leading to improved outcomes and competitiveness.",15.74,success,stop,80,65,11.35,100,good,No issues detected by heuristic checks,summary_quality,heuristic,Preservation of the original meaning; Coverage of key information; Conciseness; Relevance to the supplied text; Avoidance of unsupported information,
+77,"Summarize in three sentences: Cloud computing provides access to computing resources over the internet. Organizations use cloud services to reduce infrastructure costs, improve scalability and increase flexibility.",summarization,easy,llama3.2:3b,llama3.2:3b,"Here is a three-sentence summary:
+
+Cloud computing allows organizations to access computing resources remotely over the internet. By using cloud services, businesses can reduce their infrastructure costs and improve their scalability and flexibility. This enables them to quickly adapt to changing needs and scale up or down as required, without having to invest in and maintain their own hardware and software.",9.72,success,stop,70,58,9.94,100,good,No issues detected by heuristic checks,summary_quality,heuristic,Preservation of the original meaning; Coverage of key information; Conciseness; Relevance to the supplied text; Avoidance of unsupported information,
+78,"Summarize in three sentences: Cybersecurity protects computer systems, networks and sensitive information from unauthorized access. Common security practices include encryption, authentication and regular software updates.",summarization,easy,llama3.2:3b,llama3.2:3b,"Here is a three-sentence summary:
+
+Cybersecurity is the practice of protecting computer systems, networks, and sensitive information from unauthorized access. Effective cybersecurity measures include encryption, authentication, and regular software updates to prevent hacking and data breaches. By implementing these security practices, individuals and organizations can safeguard their digital assets and maintain the confidentiality, integrity, and availability of their data.",8.82,success,stop,75,58,12.26,100,good,No issues detected by heuristic checks,summary_quality,heuristic,Preservation of the original meaning; Coverage of key information; Conciseness; Relevance to the supplied text; Avoidance of unsupported information,
+79,"Summarize in three sentences: Data analytics involves collecting, cleaning and analyzing information to discover useful insights. Businesses use these insights to improve operations and make informed decisions.",summarization,easy,llama3.2:3b,llama3.2:3b,"Data analytics is the process of collecting, processing, and interpreting data to extract meaningful insights and patterns. By analyzing this data, businesses can gain a deeper understanding of their operations, customer behavior, and market trends, enabling them to make informed decisions. The insights gained from data analytics can help businesses improve their efficiency, optimize resources, and drive growth.",8.27,success,stop,70,58,12.38,100,good,No issues detected by heuristic checks,summary_quality,heuristic,Preservation of the original meaning; Coverage of key information; Conciseness; Relevance to the supplied text; Avoidance of unsupported information,
+80,"Summarize in three sentences: Python is a popular programming language known for its simple syntax. It is widely used in automation, web development, artificial intelligence and data science.",summarization,easy,llama3.2:3b,llama3.2:3b,"Here is a three-sentence summary:
+
+Python is a popular programming language recognized for its simple and intuitive syntax. It is widely used in various fields, including automation, web development, artificial intelligence, and data science. Its versatility and ease of use have made it a go-to choice for many developers and researchers.",7.45,success,stop,63,60,13.01,100,good,No issues detected by heuristic checks,summary_quality,heuristic,Preservation of the original meaning; Coverage of key information; Conciseness; Relevance to the supplied text; Avoidance of unsupported information,
+81,"Summarize in three sentences: Database management systems organize and store information efficiently. They support data retrieval, modification, security and transaction management.",summarization,easy,llama3.2:3b,llama3.2:3b,"Here is a three-sentence summary:
+
+Database management systems (DBMS) play a crucial role in organizing and storing information in a structured and efficient manner. They provide a range of features, including data retrieval, modification, security, and transaction management, to ensure that data is accurate, reliable, and accessible. By leveraging a DBMS, organizations can improve data management, reduce errors, and increase productivity, ultimately driving business success.",10.56,success,stop,87,53,10.84,100,good,No issues detected by heuristic checks,summary_quality,heuristic,Preservation of the original meaning; Coverage of key information; Conciseness; Relevance to the supplied text; Avoidance of unsupported information,
+82,Summarize in three sentences: Machine learning enables computers to learn from historical data. Models can identify patterns and make predictions without explicitly programming every possible outcome.,summarization,easy,llama3.2:3b,llama3.2:3b,"Here is a three-sentence summary:
+
+Machine learning allows computers to learn from historical data and identify patterns, enabling them to make predictions without being explicitly programmed. This approach enables models to adapt to new data and improve their performance over time. By leveraging machine learning, computers can learn from experience and make predictions with a high degree of accuracy, without the need for manual programming of every possible outcome.",9.71,success,stop,79,56,11.1,100,good,No issues detected by heuristic checks,summary_quality,heuristic,Preservation of the original meaning; Coverage of key information; Conciseness; Relevance to the supplied text; Avoidance of unsupported information,
+83,"Summarize in three sentences: Software engineering applies systematic methods to software development. Requirements analysis, design, implementation, testing and maintenance are important stages.",summarization,easy,llama3.2:3b,llama3.2:3b,"Software engineering is a systematic approach to developing software that ensures quality, reliability, and maintainability. It involves a structured process that includes stages such as requirements analysis, design, implementation, testing, and maintenance to produce high-quality software products. By applying these systematic methods, software engineers can create software that meets user needs and is adaptable to changing requirements over time.",8.23,success,stop,72,55,12.74,100,good,No issues detected by heuristic checks,summary_quality,heuristic,Preservation of the original meaning; Coverage of key information; Conciseness; Relevance to the supplied text; Avoidance of unsupported information,
+84,"Summarize in three sentences: Distributed systems consist of multiple computers working together. They provide scalability, resource sharing and improved fault tolerance.",summarization,medium,qwen2.5:3b,qwen2.5:3b,"Distributed systems are composed of multiple interconnected computers that collaborate to perform tasks. These systems offer scalability, allowing them to handle increased loads by distributing work across more nodes. Additionally, they enhance fault tolerance by distributing resources and services, so the failure of one node does not necessarily bring down the entire system.",16.0,success,stop,61,56,10.05,100,good,No issues detected by heuristic checks,summary_quality,heuristic,Preservation of the original meaning; Coverage of key information; Conciseness; Relevance to the supplied text; Avoidance of unsupported information,
+85,Summarize in three sentences: Blockchain is a distributed digital ledger. Transactions are recorded in connected blocks and protected through cryptographic techniques.,summarization,medium,qwen2.5:3b,qwen2.5:3b,"Blockchain is a distributed digital ledger technology where transactions are grouped into blocks and stored across a network of computers. These blocks are linked together in a secure manner using cryptographic techniques, ensuring that once a transaction is recorded, it cannot be altered or deleted, maintaining the integrity and transparency of the data.",7.25,success,stop,59,55,12.65,100,good,No issues detected by heuristic checks,summary_quality,heuristic,Preservation of the original meaning; Coverage of key information; Conciseness; Relevance to the supplied text; Avoidance of unsupported information,
+86,"Summarize in three sentences: Internet of Things connects physical devices to the internet. Sensors collect information that can be used for monitoring, automation and analysis.",summarization,medium,qwen2.5:3b,qwen2.5:3b,"The Internet of Things (IoT) enables physical devices to connect to the internet, allowing them to communicate and exchange data. Sensors are a key component in IoT, collecting various types of information such as temperature, sound, or motion. This data can then be used for monitoring, automating processes, and analyzing trends or patterns.",8.49,success,stop,67,60,11.33,100,good,No issues detected by heuristic checks,summary_quality,heuristic,Preservation of the original meaning; Coverage of key information; Conciseness; Relevance to the supplied text; Avoidance of unsupported information,
+87,Summarize in three sentences: Big data refers to extremely large and complex datasets. Specialized technologies help organizations process and analyze this information.,summarization,medium,qwen2.5:3b,qwen2.5:3b,"Big data encompasses vast and intricate datasets that traditional systems cannot manage efficiently. Advanced technologies, such as big data analytics and distributed computing, enable organizations to process and analyze these large datasets effectively. These technologies facilitate the extraction of valuable insights and patterns from big data, which can inform decision-making and drive innovation.",7.56,success,stop,61,57,12.27,100,good,No issues detected by heuristic checks,summary_quality,heuristic,Preservation of the original meaning; Coverage of key information; Conciseness; Relevance to the supplied text; Avoidance of unsupported information,
+88,"Summarize in three sentences: Data visualization represents information through charts and graphs. It helps people understand patterns, trends and relationships.",summarization,medium,qwen2.5:3b,qwen2.5:3b,"Data visualization uses charts and graphs to represent information, making complex data more accessible and understandable. It aids in identifying patterns, trends, and relationships within the data, facilitating better decision-making and insight. Visualization tools help users quickly grasp the essence of large datasets, enhancing their ability to analyze and communicate findings effectively.",7.23,success,stop,62,55,13.2,100,good,No issues detected by heuristic checks,summary_quality,heuristic,Preservation of the original meaning; Coverage of key information; Conciseness; Relevance to the supplied text; Avoidance of unsupported information,
+89,"Summarize in three sentences: Natural language processing allows computers to understand and generate human language. Applications include translation, chatbots and sentiment analysis.",summarization,medium,qwen2.5:3b,qwen2.5:3b,"Natural language processing enables computers to interpret and generate human language, significantly impacting various applications such as translation, chatbots, and sentiment analysis. These technologies help in automating communication processes, improving user experiences, and aiding in data analysis and decision-making.",6.37,success,stop,50,58,13.23,100,good,No issues detected by heuristic checks,summary_quality,heuristic,Preservation of the original meaning; Coverage of key information; Conciseness; Relevance to the supplied text; Avoidance of unsupported information,
+90,Summarize in three sentences: DevOps combines software development and IT operations. Automation and continuous integration improve software delivery.,summarization,medium,qwen2.5:3b,qwen2.5:3b,DevOps integrates the practices and tools of software development and IT operations to streamline processes and improve collaboration. Automation and continuous integration are key practices that enable faster and more reliable software delivery by automating repetitive tasks and integrating code changes into the system continuously.,6.35,success,stop,50,53,12.82,100,good,No issues detected by heuristic checks,summary_quality,heuristic,Preservation of the original meaning; Coverage of key information; Conciseness; Relevance to the supplied text; Avoidance of unsupported information,
+91,"Summarize in three sentences: Cloud storage allows users to save information on remote servers. It supports accessibility, collaboration and scalable storage.",summarization,medium,qwen2.5:3b,qwen2.5:3b,"Cloud storage enables users to store their data on remote servers, providing accessibility and collaboration features. This service supports scalability, allowing users to easily expand their storage capacity as needed. Users can access their stored information from anywhere with an internet connection, enhancing both convenience and flexibility in managing their data.",7.01,success,stop,58,56,13.0,100,good,No issues detected by heuristic checks,summary_quality,heuristic,Preservation of the original meaning; Coverage of key information; Conciseness; Relevance to the supplied text; Avoidance of unsupported information,
+92,Summarize in three sentences: Computer networks connect devices to exchange information. Communication protocols ensure reliable data transmission.,summarization,medium,qwen2.5:3b,qwen2.5:3b,"Computer networks are designed to connect various devices so that they can exchange information efficiently. Communication protocols are essential for ensuring that data is transmitted reliably and accurately between devices on a network. These protocols define the rules and formats for data transmission, ensuring that information is correctly received and understood by the intended devices.",6.84,success,stop,60,51,13.51,100,good,No issues detected by heuristic checks,summary_quality,heuristic,Preservation of the original meaning; Coverage of key information; Conciseness; Relevance to the supplied text; Avoidance of unsupported information,
+93,Summarize in three sentences: Operating systems manage hardware and software resources. They provide interfaces between applications and computer hardware.,summarization,hard,qwen2.5:3b,qwen2.5:3b,"Operating systems are responsible for managing and coordinating the hardware resources of a computer system, such as the processor, memory, and input/output devices. They also provide an interface between the software applications running on the system and the underlying hardware, allowing these applications to interact with the system in a consistent and efficient manner. Operating systems ensure that hardware resources are allocated and managed effectively, and they abstract the complexities of hardware interactions, making it easier for software developers to create applications.",9.76,success,stop,93,53,12.71,100,good,No issues detected by heuristic checks,summary_quality,heuristic,Preservation of the original meaning; Coverage of key information; Conciseness; Relevance to the supplied text; Avoidance of unsupported information,
+94,"Summarize in three sentences: SQL is used to manage relational databases. It supports querying, inserting, updating and deleting records.",summarization,hard,qwen2.5:3b,qwen2.5:3b,"SQL, or Structured Query Language, is primarily used for managing relational databases by providing a standardized way to interact with them. It supports a wide range of operations including querying, inserting, updating, and deleting records from the database. Through these operations, SQL enables users and applications to efficiently manage and manipulate data stored in relational databases.",8.16,success,stop,67,55,11.86,100,good,No issues detected by heuristic checks,summary_quality,heuristic,Preservation of the original meaning; Coverage of key information; Conciseness; Relevance to the supplied text; Avoidance of unsupported information,
+95,Summarize in three sentences: Predictive analytics uses historical data and statistical techniques to estimate future outcomes. Businesses use it for forecasting and planning.,summarization,hard,qwen2.5:3b,qwen2.5:3b,"Predictive analytics leverages historical data and statistical methods to forecast future outcomes. Businesses apply this technique for making informed decisions and planning ahead. By analyzing past data, predictive analytics helps in anticipating trends and making strategic business plans.",6.66,success,stop,45,58,11.1,100,good,No issues detected by heuristic checks,summary_quality,heuristic,Preservation of the original meaning; Coverage of key information; Conciseness; Relevance to the supplied text; Avoidance of unsupported information,
+96,Summarize in three sentences: Artificial neural networks are inspired by the structure of the human brain. They consist of interconnected processing units called neurons.,summarization,hard,qwen2.5:3b,qwen2.5:3b,"Artificial neural networks are modeled after the structure of the human brain, consisting of interconnected processing units called neurons. These networks process and analyze data through layers of neurons, mimicking how the brain processes information. They are widely used in various applications, including pattern recognition, prediction, and decision-making, thanks to their ability to learn from data and improve their performance over time.",9.36,success,stop,75,58,11.02,100,good,No issues detected by heuristic checks,summary_quality,heuristic,Preservation of the original meaning; Coverage of key information; Conciseness; Relevance to the supplied text; Avoidance of unsupported information,
+97,Summarize in three sentences: Software testing identifies defects and verifies application functionality. Different testing methods help improve reliability and quality.,summarization,hard,qwen2.5:3b,qwen2.5:3b,"Software testing is a critical process that involves identifying defects and verifying that the application functions as intended. Various testing methods, such as unit testing, integration testing, system testing, and acceptance testing, are employed to ensure reliability and quality. By employing these different testing methods, developers can improve the overall quality and reliability of the software.",7.01,success,stop,66,54,15.14,100,good,No issues detected by heuristic checks,summary_quality,heuristic,Preservation of the original meaning; Coverage of key information; Conciseness; Relevance to the supplied text; Avoidance of unsupported information,
+98,"Summarize in three sentences: Data preprocessing prepares raw information for analysis. It includes handling missing values, removing duplicates and transforming variables.",summarization,hard,qwen2.5:3b,qwen2.5:3b,"Data preprocessing is a crucial step in data analysis that involves preparing raw information for further processing. This process includes handling missing values by filling or removing them, removing duplicates to avoid redundancy, and transforming variables to ensure they are suitable for analysis, such as scaling or encoding categorical variables.",6.36,success,stop,56,56,15.39,100,good,No issues detected by heuristic checks,summary_quality,heuristic,Preservation of the original meaning; Coverage of key information; Conciseness; Relevance to the supplied text; Avoidance of unsupported information,
+99,Summarize in three sentences: Microservices architecture divides applications into smaller independent services. Each service performs a specific function and communicates through APIs.,summarization,hard,qwen2.5:3b,qwen2.5:3b,"In a microservices architecture, applications are broken down into smaller, independent services, each responsible for a specific function. These services communicate with one another using APIs, enabling them to operate and scale independently. This approach allows for more flexible and resilient system architectures, as changes or failures in one service do not necessarily affect the entire system.",7.11,success,stop,67,57,15.32,100,good,No issues detected by heuristic checks,summary_quality,heuristic,Preservation of the original meaning; Coverage of key information; Conciseness; Relevance to the supplied text; Avoidance of unsupported information,
+100,"Summarize in three sentences: Generative AI creates new content such as text, images and code. Large language models use patterns learned from training data to generate responses.",summarization,hard,qwen2.5:3b,qwen2.5:3b,"Generative AI technology produces new content including text, images, and code by leveraging patterns it has learned from vast amounts of training data. Large language models specifically use this approach to generate responses to queries or prompts, often with high accuracy and coherence. These models can create coherent text that mimics human writing, such as articles, stories, or even answering complex questions.",7.63,success,stop,74,63,15.23,100,good,No issues detected by heuristic checks,summary_quality,heuristic,Preservation of the original meaning; Coverage of key information; Conciseness; Relevance to the supplied text; Avoidance of unsupported information,
