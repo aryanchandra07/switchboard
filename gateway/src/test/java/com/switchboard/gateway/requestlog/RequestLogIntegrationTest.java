@@ -22,7 +22,14 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.reactive.server.WebTestClient;
 
+import org.springframework.http.HttpHeaders;
+import org.springframework.security.crypto.password.PasswordEncoder;
+
+import com.switchboard.gateway.TestFixtures;
 import com.switchboard.gateway.TestcontainersConfiguration;
+import com.switchboard.gateway.apikey.ApiKeyService;
+import com.switchboard.gateway.user.User;
+import com.switchboard.gateway.user.UserRepository;
 import com.switchboard.gateway.provider.LlmProvider;
 import com.switchboard.gateway.provider.ProviderException;
 import com.switchboard.gateway.provider.ProviderResponse;
@@ -46,19 +53,34 @@ class RequestLogIntegrationTest {
 	@MockitoBean
 	private LlmProvider provider;
 
+	@Autowired
+	private UserRepository users;
+	@Autowired
+	private PasswordEncoder passwordEncoder;
+	@Autowired
+	private ApiKeyService apiKeys;
+	@Autowired
+	private com.switchboard.gateway.member.MemberService memberService;
+
 	private WebTestClient client;
+	private User member;
+	private ApiKeyService.CreatedKey key;
 
 	@BeforeEach
 	void setUp() {
 		client = WebTestClient.bindToApplicationContext(context).configureClient().build();
 		db.sql("DELETE FROM requests").fetch().rowsUpdated().block();
+		member = TestFixtures.createMember(users, passwordEncoder);
+		TestFixtures.allowModels(memberService, member.id());
+		key = TestFixtures.createKey(apiKeys, member);
 		when(provider.name()).thenReturn("ollama");
 		when(provider.chat(any())).thenReturn(
 				Mono.just(new ProviderResponse("llama3.2", SECRET_REPLY, "stop", 12, 34)));
 	}
 
 	private WebTestClient.ResponseSpec chat(String body) {
-		return client.post().uri("/v1/chat/completions").contentType(MediaType.APPLICATION_JSON)
+		return client.post().uri("/v1/chat/completions")
+				.header(HttpHeaders.AUTHORIZATION, "Bearer " + key.fullKey()).contentType(MediaType.APPLICATION_JSON)
 				.bodyValue(body).exchange();
 	}
 
@@ -88,7 +110,8 @@ class RequestLogIntegrationTest {
 		assertThat((Integer) row.get("latency_ms")).isGreaterThanOrEqualTo(0);
 		assertThat(row.get("cache_hit")).isEqualTo(false);
 		assertThat(row.get("error_code")).isNull();
-		assertThat(row.get("user_id")).isNull(); // no member auth on /v1 yet
+		assertThat(row.get("user_id")).isEqualTo(member.id());
+		assertThat(row.get("api_key_id")).isEqualTo(key.key().id());
 		assertThat(row.get("created_at")).isNotNull();
 	}
 
@@ -132,6 +155,8 @@ class RequestLogIntegrationTest {
 		chat("{\"messages\":[{\"role\":\"user\",\"content\":\"" + SECRET_PROMPT + "\"}]}").expectStatus().isOk();
 
 		Map<String, Object> row = awaitRows(1).get(0);
+		assertThat(row.values().stream().map(String::valueOf))
+				.noneMatch(v -> v.contains(key.fullKey()));
 		assertThat(row.values().stream().map(String::valueOf))
 				.noneMatch(v -> v.contains(SECRET_PROMPT) || v.contains(SECRET_REPLY));
 	}

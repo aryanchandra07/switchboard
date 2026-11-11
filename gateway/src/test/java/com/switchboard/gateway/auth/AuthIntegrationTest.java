@@ -217,8 +217,9 @@ class AuthIntegrationTest {
 	@Test
 	void adminPaths_adminPassesSecurity() {
 		String token = tokenFor(ADMIN_EMAIL, ADMIN_PASSWORD);
-		// No /admin endpoints exist yet, so an admin gets 404 (not 401/403): security let them through.
-		getWithToken("/admin/members", token).expectStatus().isNotFound();
+		getWithToken("/admin/members", token).expectStatus().isOk();
+		// A non-existent admin path gives 404 (not 401/403): security let the admin through.
+		getWithToken("/admin/does-not-exist", token).expectStatus().isNotFound();
 	}
 
 	@Test

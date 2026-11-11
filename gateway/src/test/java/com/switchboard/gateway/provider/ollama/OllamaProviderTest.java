@@ -155,6 +155,24 @@ class OllamaProviderTest {
 	}
 
 	@Test
+	void listModels_readsTagsAndDropsLatestSuffix() throws InterruptedException {
+		enqueueJson(200, """
+				{"models":[{"name":"llama3.2:latest","size":2000},{"name":"qwen2.5:7b"},{"name":"nomic-embed-text:latest"}]}
+				""");
+
+		StepVerifier.create(provider.listModels().collectList())
+				.assertNext(names -> assertThat(names).containsExactly("llama3.2", "qwen2.5:7b", "nomic-embed-text"))
+				.verifyComplete();
+		assertThat(server.takeRequest(1, TimeUnit.SECONDS).getPath()).isEqualTo("/api/tags");
+	}
+
+	@Test
+	void listModels_noModels_isEmpty() {
+		enqueueJson(200, "{\"models\":[]}");
+		StepVerifier.create(provider.listModels()).verifyComplete();
+	}
+
+	@Test
 	void chat_ollamaNotRunning_failsWithProviderException() throws IOException {
 		// Start and stop a server to get a port that nothing is listening on.
 		MockWebServer stopped = new MockWebServer();

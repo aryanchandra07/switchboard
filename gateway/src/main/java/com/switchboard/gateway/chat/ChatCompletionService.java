@@ -13,6 +13,7 @@ import org.springframework.stereotype.Service;
 import com.switchboard.gateway.api.dto.ChatCompletionRequest;
 import com.switchboard.gateway.api.dto.ChatCompletionResponse;
 import com.switchboard.gateway.api.dto.ChatMessage;
+import com.switchboard.gateway.limits.RequestBlockedException;
 import com.switchboard.gateway.provider.LlmProvider;
 import com.switchboard.gateway.provider.ProviderException;
 import com.switchboard.gateway.provider.ProviderRequest;
@@ -35,19 +36,31 @@ public class ChatCompletionService {
 	private final LlmProvider provider;
 	private final OllamaProperties ollamaProperties;
 	private final RequestLogger requestLogger;
+	private final UsagePolicy usagePolicy;
 	private final Clock clock;
 
-	@Autowired // two constructors exist, so tell Spring which one to use
+	@Autowired // several constructors exist, so tell Spring which one to use
 	public ChatCompletionService(LlmProvider provider, OllamaProperties ollamaProperties,
-			RequestLogger requestLogger) {
-		this(provider, ollamaProperties, requestLogger, Clock.systemUTC());
+			RequestLogger requestLogger, UsagePolicy usagePolicy) {
+		this(provider, ollamaProperties, requestLogger, usagePolicy, Clock.systemUTC());
+	}
+
+	/** Without limits; for unit tests. */
+	ChatCompletionService(LlmProvider provider, OllamaProperties ollamaProperties, RequestLogger requestLogger) {
+		this(provider, ollamaProperties, requestLogger, UsagePolicy.NONE, Clock.systemUTC());
 	}
 
 	ChatCompletionService(LlmProvider provider, OllamaProperties ollamaProperties, RequestLogger requestLogger,
 			Clock clock) {
+		this(provider, ollamaProperties, requestLogger, UsagePolicy.NONE, clock);
+	}
+
+	ChatCompletionService(LlmProvider provider, OllamaProperties ollamaProperties, RequestLogger requestLogger,
+			UsagePolicy usagePolicy, Clock clock) {
 		this.provider = provider;
 		this.ollamaProperties = ollamaProperties;
 		this.requestLogger = requestLogger;
+		this.usagePolicy = usagePolicy;
 		this.clock = clock;
 	}
 
@@ -56,25 +69,35 @@ public class ChatCompletionService {
 	}
 
 	public Mono<ChatCompletionResponse> complete(ChatCompletionRequest request, RequestContext context) {
-		String model = resolveModel(request.model());
-		ProviderRequest providerRequest = new ProviderRequest(model, request.messages());
+		boolean auto = isAuto(request.model());
+		String requested = resolveModel(request.model());
 
-		// Mono.defer so the start time is taken when someone subscribes, not when this method runs.
-		return Mono.defer(() -> {
+		// 1. Limits (allowed model, rate, budget) decide the final model.
+		//    A refusal is logged as BLOCKED and the model is never called.
+		Mono<String> chosenModel = Mono.defer(() -> usagePolicy.check(context, requested, auto))
+				.doOnError(RequestBlockedException.class,
+						e -> requestLogger.record(blockedLog(e, auto ? "auto" : requested, context)));
+
+		// 2. Model call. Mono.defer so the start time is taken when it actually runs.
+		return chosenModel.flatMap(model -> Mono.defer(() -> {
 			long start = clock.millis();
-			return provider.chat(providerRequest)
+			return provider.chat(new ProviderRequest(model, request.messages()))
 					.map(r -> toResponse(r, model, clock.millis() - start))
-					.doOnNext(response -> requestLogger.record(successLog(response, context)))
+					.doOnNext(response -> {
+						requestLogger.record(successLog(response, context));
+						usagePolicy.recordSpend(context, response.switchboard().costUsd());
+					})
 					.doOnError(e -> requestLogger.record(errorLog(e, model, clock.millis() - start, context)));
-		});
+		}));
+	}
+
+	static boolean isAuto(String requested) {
+		return requested == null || requested.isBlank() || AUTO.equalsIgnoreCase(requested.trim());
 	}
 
 	/** "auto" (or no model) → default model. Person B's router will replace this later. */
 	String resolveModel(String requested) {
-		if (requested == null || requested.isBlank() || AUTO.equalsIgnoreCase(requested.trim())) {
-			return ollamaProperties.defaultModel();
-		}
-		return requested.trim();
+		return isAuto(requested) ? ollamaProperties.defaultModel() : requested.trim();
 	}
 
 	private ChatCompletionResponse toResponse(ProviderResponse r, String requestedModel, long latencyMs) {
@@ -107,6 +130,11 @@ public class ChatCompletionService {
 		String code = e instanceof ProviderException pe ? pe.provider() + "_unavailable" : "server_error";
 		return new RequestLog(null, ctx.userId(), ctx.apiKeyId(), provider.name(), model, null, 0, 0,
 				BigDecimal.ZERO, (int) Math.max(0, latencyMs), false, RequestLog.Status.ERROR, code, null, now());
+	}
+
+	private RequestLog blockedLog(RequestBlockedException e, String model, RequestContext ctx) {
+		return new RequestLog(null, ctx.userId(), ctx.apiKeyId(), null, model, null, 0, 0, BigDecimal.ZERO, 0,
+				false, RequestLog.Status.BLOCKED, null, e.reason(), now());
 	}
 
 	private Instant now() {

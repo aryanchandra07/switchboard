@@ -293,4 +293,99 @@ class ChatCompletionServiceTest {
 				.map(java.lang.reflect.RecordComponent::getName).toList();
 		assertThat(fieldNames).doesNotContain("prompt", "messages", "content", "reply", "response");
 	}
+
+	// ---------- usage limits ----------
+
+	/** Policy that can block, and records the spend it was given. */
+	static class FakePolicy implements UsagePolicy {
+		RuntimeException block;
+		final List<BigDecimal> spent = new CopyOnWriteArrayList<>();
+
+		String switchTo;
+
+		@Override
+		public Mono<String> check(RequestContext context, String model, boolean auto) {
+			if (block != null) {
+				return Mono.error(block);
+			}
+			return Mono.just(switchTo != null ? switchTo : model);
+		}
+
+		@Override
+		public void recordSpend(RequestContext context, BigDecimal costUsd) {
+			spent.add(costUsd);
+		}
+	}
+
+	@Test
+	void blockedByPolicy_providerNotCalled_loggedAsBlocked() {
+		FakePolicy policy = new FakePolicy();
+		policy.block = new com.switchboard.gateway.limits.RequestBlockedException.RateLimited(5, 30);
+		var limited = new ChatCompletionService(provider, PROPS, logger, policy, java.time.Clock.systemUTC());
+		UUID user = UUID.randomUUID();
+
+		StepVerifier.create(limited.complete(new ChatCompletionRequest("auto", MESSAGES),
+				new RequestContext(user, null, "MEMBER")))
+				.expectError(com.switchboard.gateway.limits.RequestBlockedException.RateLimited.class).verify();
+
+		assertThat(provider.lastRequest.get()).isNull();
+		assertThat(logger.entries).singleElement().satisfies(l -> {
+			assertThat(l.status()).isEqualTo(RequestLog.Status.BLOCKED);
+			assertThat(l.blockedReason()).isEqualTo("rate_limit_exceeded");
+			assertThat(l.userId()).isEqualTo(user);
+			assertThat(l.errorCode()).isNull();
+		});
+		assertThat(policy.spent).isEmpty();
+	}
+
+	@Test
+	void success_recordsSpendWithPolicy() {
+		FakePolicy policy = new FakePolicy();
+		var limited = new ChatCompletionService(provider, PROPS, logger, policy, java.time.Clock.systemUTC());
+		limited.complete(new ChatCompletionRequest("auto", MESSAGES), new RequestContext(UUID.randomUUID(), null))
+				.block();
+		assertThat(policy.spent).containsExactly(BigDecimal.ZERO);
+	}
+
+	@Test
+	void providerFailure_recordsNoSpend() {
+		FakePolicy policy = new FakePolicy();
+		provider.reply = Mono.error(new ProviderException("ollama", "down", null));
+		var limited = new ChatCompletionService(provider, PROPS, logger, policy, java.time.Clock.systemUTC());
+		StepVerifier.create(limited.complete(new ChatCompletionRequest("auto", MESSAGES))).expectError().verify();
+		assertThat(policy.spent).isEmpty();
+	}
+
+	@Test
+	void policyChoosesModel_providerGetsIt() {
+		FakePolicy policy = new FakePolicy();
+		policy.switchTo = "qwen2.5:7b";
+		provider.reply = Mono.just(new ProviderResponse(null, "ok", "stop", 1, 1));
+		var limited = new ChatCompletionService(provider, PROPS, logger, policy, java.time.Clock.systemUTC());
+
+		StepVerifier.create(limited.complete(new ChatCompletionRequest("auto", MESSAGES)))
+				.assertNext(r -> assertThat(r.model()).isEqualTo("qwen2.5:7b"))
+				.verifyComplete();
+		assertThat(provider.lastRequest.get().model()).isEqualTo("qwen2.5:7b");
+	}
+
+	@Test
+	void blockedAutoRequest_isLoggedAsAuto() {
+		FakePolicy policy = new FakePolicy();
+		policy.block = new com.switchboard.gateway.limits.RequestBlockedException.ModelNotAllowed("auto", List.of());
+		var limited = new ChatCompletionService(provider, PROPS, logger, policy, java.time.Clock.systemUTC());
+		StepVerifier.create(limited.complete(new ChatCompletionRequest(null, MESSAGES))).expectError().verify();
+		assertThat(logger.entries).singleElement().satisfies(l -> {
+			assertThat(l.model()).isEqualTo("auto");
+			assertThat(l.blockedReason()).isEqualTo("model_not_allowed");
+		});
+	}
+
+	@Test
+	void isAuto_detectsAutoVariants() {
+		assertThat(ChatCompletionService.isAuto(null)).isTrue();
+		assertThat(ChatCompletionService.isAuto(" ")).isTrue();
+		assertThat(ChatCompletionService.isAuto("Auto")).isTrue();
+		assertThat(ChatCompletionService.isAuto("llama3.2")).isFalse();
+	}
 }
