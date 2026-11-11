@@ -1,0 +1,46 @@
+# Switchboard local infrastructure.
+# Start:  docker compose -f infra/docker-compose.yml up -d
+# Stop:   docker compose -f infra/docker-compose.yml down        (data is kept)
+# Reset:  docker compose -f infra/docker-compose.yml down -v     (deletes all data)
+#
+# Credentials below are local-development defaults. Override them with an infra/.env file
+# (git-ignored) for any shared or hosted setup.
+
+name: switchboard
+
+services:
+  postgres:
+    image: pgvector/pgvector:pg16          # Postgres 16 with the pgvector extension (semantic cache)
+    container_name: switchboard-postgres
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-switchboard}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-switchboard}
+      POSTGRES_DB: ${POSTGRES_DB:-switchboard}
+    ports:
+      - "${POSTGRES_PORT:-5433}:5432"      # host port 5433 avoids clashing with another local Postgres on 5432
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+    restart: unless-stopped
+
+  redis:
+    image: redis:7                         # short-lived state: rate-limit buckets, daily spend, exact cache
+    container_name: switchboard-redis
+    ports:
+      - "${REDIS_PORT:-6379}:6379"
+    volumes:
+      - redis-data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+    restart: unless-stopped
+
+volumes:
+  postgres-data:
+  redis-data:
