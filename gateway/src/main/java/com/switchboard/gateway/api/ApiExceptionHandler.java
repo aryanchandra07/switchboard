@@ -13,7 +13,9 @@ import org.springframework.web.server.ResponseStatusException;
 import org.springframework.web.server.ServerWebInputException;
 
 import com.switchboard.gateway.api.dto.ErrorResponse;
+import com.switchboard.gateway.auth.AuthException;
 import com.switchboard.gateway.provider.ProviderException;
+import com.switchboard.gateway.providerkey.ProviderKeyService;
 
 /** Turns exceptions into consistent OpenAI-style JSON errors. */
 @RestControllerAdvice
@@ -46,6 +48,24 @@ public class ApiExceptionHandler {
 				: (status != null ? status.getReasonPhrase() : "Request failed");
 		return ResponseEntity.status(e.getStatusCode())
 				.body(ErrorResponse.of(message, "invalid_request_error", null));
+	}
+
+	/** Wrong email/password → 401. */
+	@ExceptionHandler(AuthException.InvalidCredentials.class)
+	ResponseEntity<ErrorResponse> handleInvalidCredentials(AuthException e) {
+		return error(HttpStatus.UNAUTHORIZED, e.getMessage(), "authentication_error", "invalid_credentials");
+	}
+
+	/** Account disabled by the admin → 403 (FR-03). */
+	@ExceptionHandler(AuthException.AccountDisabled.class)
+	ResponseEntity<ErrorResponse> handleDisabled(AuthException e) {
+		return error(HttpStatus.FORBIDDEN, e.getMessage(), "permission_error", "account_disabled");
+	}
+
+	/** PUT /admin/providers/{provider} with a provider we don't support → 400. */
+	@ExceptionHandler(ProviderKeyService.UnknownProviderException.class)
+	ResponseEntity<ErrorResponse> handleUnknownProvider(ProviderKeyService.UnknownProviderException e) {
+		return error(HttpStatus.BAD_REQUEST, e.getMessage(), "invalid_request_error", "unknown_provider");
 	}
 
 	/** The model backend failed (down, timeout, model not found). */

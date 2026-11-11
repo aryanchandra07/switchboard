@@ -18,6 +18,10 @@ import org.springframework.http.MediaType;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.reactive.server.WebTestClient;
 
+import org.springframework.context.annotation.Import;
+import org.springframework.test.context.ActiveProfiles;
+
+import com.switchboard.gateway.TestcontainersConfiguration;
 import com.switchboard.gateway.api.dto.ChatMessage;
 import com.switchboard.gateway.provider.LlmProvider;
 import com.switchboard.gateway.provider.ProviderException;
@@ -31,6 +35,8 @@ import reactor.core.publisher.Mono;
  * validation, error handling), with the model provider replaced by a Mockito mock.
  */
 @SpringBootTest
+@Import(TestcontainersConfiguration.class)
+@ActiveProfiles("test")
 class ChatCompletionControllerTest {
 
 	private static final String URL = "/v1/chat/completions";

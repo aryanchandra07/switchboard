@@ -8,7 +8,9 @@ import java.time.Duration;
 import java.time.Instant;
 import java.time.ZoneOffset;
 import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.atomic.AtomicReference;
+import java.util.UUID;
 
 import org.junit.jupiter.api.Test;
 
@@ -19,6 +21,8 @@ import com.switchboard.gateway.provider.ProviderException;
 import com.switchboard.gateway.provider.ProviderRequest;
 import com.switchboard.gateway.provider.ProviderResponse;
 import com.switchboard.gateway.provider.ollama.OllamaProperties;
+import com.switchboard.gateway.requestlog.RequestLog;
+import com.switchboard.gateway.requestlog.RequestLogger;
 
 import reactor.core.publisher.Mono;
 import reactor.test.StepVerifier;
@@ -47,8 +51,27 @@ class ChatCompletionServiceTest {
 		}
 	}
 
+	/** Fake logger: keeps entries in a list instead of writing to a database. */
+	static class CapturingLogger extends RequestLogger {
+		final List<RequestLog> entries = new CopyOnWriteArrayList<>();
+		boolean fail;
+
+		CapturingLogger() {
+			super(null);
+		}
+
+		@Override
+		public void record(RequestLog entry) {
+			if (fail) {
+				throw new IllegalStateException("must never be called in a way that can throw");
+			}
+			entries.add(entry);
+		}
+	}
+
+	private final CapturingLogger logger = new CapturingLogger();
 	private final FakeProvider provider = new FakeProvider();
-	private final ChatCompletionService service = new ChatCompletionService(provider, PROPS);
+	private final ChatCompletionService service = new ChatCompletionService(provider, PROPS, logger);
 
 	@Test
 	void resolveModel_autoNullBlank_useDefaultModel() {
@@ -161,7 +184,7 @@ class ChatCompletionServiceTest {
 				return this;
 			}
 		};
-		var timed = new ChatCompletionService(provider, PROPS, ticking);
+		var timed = new ChatCompletionService(provider, PROPS, logger, ticking);
 
 		StepVerifier.create(timed.complete(new ChatCompletionRequest("auto", MESSAGES)))
 				.assertNext(r -> assertThat(r.switchboard().latencyMs()).isEqualTo(250))
@@ -184,5 +207,90 @@ class ChatCompletionServiceTest {
 
 		pending.block();
 		assertThat(provider.lastRequest.get()).isNotNull();
+	}
+
+	// ---------- request logging ----------
+
+	@Test
+	void success_isLoggedWithAllMetadata() {
+		UUID user = UUID.randomUUID();
+		UUID key = UUID.randomUUID();
+		service.complete(new ChatCompletionRequest("auto", MESSAGES), new RequestContext(user, key)).block();
+
+		assertThat(logger.entries).hasSize(1);
+		RequestLog log = logger.entries.get(0);
+		assertThat(log.id()).isNull(); // database generates it
+		assertThat(log.userId()).isEqualTo(user);
+		assertThat(log.apiKeyId()).isEqualTo(key);
+		assertThat(log.provider()).isEqualTo("fake");
+		assertThat(log.model()).isEqualTo("llama3.2");
+		assertThat(log.routerScore()).isNull();
+		assertThat(log.tokensIn()).isEqualTo(7);
+		assertThat(log.tokensOut()).isEqualTo(3);
+		assertThat(log.costUsd()).isEqualByComparingTo(BigDecimal.ZERO);
+		assertThat(log.latencyMs()).isGreaterThanOrEqualTo(0);
+		assertThat(log.cacheHit()).isFalse();
+		assertThat(log.status()).isEqualTo(RequestLog.Status.SUCCESS);
+		assertThat(log.errorCode()).isNull();
+		assertThat(log.blockedReason()).isNull();
+		assertThat(log.createdAt()).isNotNull();
+	}
+
+	@Test
+	void anonymousRequest_isLoggedWithoutUser() {
+		service.complete(new ChatCompletionRequest("auto", MESSAGES)).block();
+		assertThat(logger.entries).singleElement().satisfies(l -> {
+			assertThat(l.userId()).isNull();
+			assertThat(l.apiKeyId()).isNull();
+		});
+	}
+
+	@Test
+	void providerFailure_isLoggedAsError_andErrorStillReachesCaller() {
+		provider.reply = Mono.error(new ProviderException("ollama", "down", null));
+
+		StepVerifier.create(service.complete(new ChatCompletionRequest("qwen2.5:7b", MESSAGES)))
+				.expectError(ProviderException.class).verify();
+
+		assertThat(logger.entries).singleElement().satisfies(l -> {
+			assertThat(l.status()).isEqualTo(RequestLog.Status.ERROR);
+			assertThat(l.errorCode()).isEqualTo("ollama_unavailable");
+			assertThat(l.model()).isEqualTo("qwen2.5:7b");
+			assertThat(l.provider()).isEqualTo("fake");
+			assertThat(l.tokensIn()).isZero();
+			assertThat(l.tokensOut()).isZero();
+		});
+	}
+
+	@Test
+	void unexpectedFailure_isLoggedAsServerError() {
+		provider.reply = Mono.error(new IllegalStateException("bug"));
+
+		StepVerifier.create(service.complete(new ChatCompletionRequest("auto", MESSAGES)))
+				.expectError(IllegalStateException.class).verify();
+		assertThat(logger.entries).singleElement()
+				.satisfies(l -> assertThat(l.errorCode()).isEqualTo("server_error"));
+	}
+
+	@Test
+	void eachRequest_isLoggedExactlyOnce() {
+		for (int i = 0; i < 5; i++) {
+			service.complete(new ChatCompletionRequest("auto", MESSAGES)).block();
+		}
+		assertThat(logger.entries).hasSize(5);
+	}
+
+	@Test
+	void notSubscribed_meansNothingLogged() {
+		service.complete(new ChatCompletionRequest("auto", MESSAGES)); // never subscribed
+		assertThat(logger.entries).isEmpty();
+	}
+
+	@Test
+	void logEntry_hasNoPlaceForPromptOrReplyText() {
+		// Structural privacy check: RequestLog has no text field that could hold the conversation.
+		var fieldNames = java.util.Arrays.stream(RequestLog.class.getRecordComponents())
+				.map(java.lang.reflect.RecordComponent::getName).toList();
+		assertThat(fieldNames).doesNotContain("prompt", "messages", "content", "reply", "response");
 	}
 }
