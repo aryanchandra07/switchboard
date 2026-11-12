@@ -1,5 +1,23 @@
 package com.switchboard.gateway.chat;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.switchboard.gateway.api.dto.ChatCompletionRequest;
+import com.switchboard.gateway.api.dto.ChatCompletionResponse;
+import com.switchboard.gateway.api.dto.ChatMessage;
+import com.switchboard.gateway.cache.CacheKeyGenerator;
+import com.switchboard.gateway.cache.ExactMatchCache;
+import com.switchboard.gateway.limits.RequestBlockedException;
+import com.switchboard.gateway.provider.LlmProvider;
+import com.switchboard.gateway.provider.ProviderException;
+import com.switchboard.gateway.provider.ProviderRegistry;
+import com.switchboard.gateway.provider.ProviderRequest;
+import com.switchboard.gateway.provider.ProviderResponse;
+import com.switchboard.gateway.provider.ollama.OllamaProperties;
+import com.switchboard.gateway.requestlog.RequestLog;
+import com.switchboard.gateway.requestlog.RequestLogger;
+import com.switchboard.gateway.resilience.FailoverProperties;
+import com.switchboard.gateway.resilience.ResilientCaller;
+
 import java.math.BigDecimal;
 import java.time.Clock;
 import java.time.Duration;
@@ -15,203 +33,501 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.switchboard.gateway.api.dto.ChatCompletionRequest;
-import com.switchboard.gateway.api.dto.ChatCompletionResponse;
-import com.switchboard.gateway.api.dto.ChatMessage;
-import com.switchboard.gateway.limits.RequestBlockedException;
-import com.switchboard.gateway.provider.LlmProvider;
-import com.switchboard.gateway.provider.ProviderException;
-import com.switchboard.gateway.provider.ProviderRegistry;
-import com.switchboard.gateway.provider.ProviderRequest;
-import com.switchboard.gateway.provider.ProviderResponse;
-import com.switchboard.gateway.provider.ollama.OllamaProperties;
-import com.switchboard.gateway.requestlog.RequestLog;
-import com.switchboard.gateway.requestlog.RequestLogger;
-import com.switchboard.gateway.resilience.FailoverProperties;
-import com.switchboard.gateway.resilience.ResilientCaller;
-
 import reactor.core.publisher.Mono;
 
-/**
- * The request pipeline:
- * <ol>
- * <li>pick the model ("auto" → default; Person B's router will replace this),</li>
- * <li>check the member's limits (allowed model, rate, budget),</li>
- * <li>call the model with retries and a circuit breaker, failing over to the next allowed fallback model
- * if it keeps failing (FR-11),</li>
- * <li>build the OpenAI-style reply and log the outcome.</li>
- * </ol>
- * Guardrails and cache (Person C) will slot in before step 3.
- */
 @Service
 public class ChatCompletionService {
 
-	private static final Logger log = LoggerFactory.getLogger(ChatCompletionService.class);
+    private static final Logger log
+            = LoggerFactory.getLogger(ChatCompletionService.class);
 
-	static final String AUTO = "auto";
+    static final String AUTO = "auto";
 
-	private final ProviderRegistry providers;
-	private final OllamaProperties ollamaProperties;
-	private final RequestLogger requestLogger;
-	private final UsagePolicy usagePolicy;
-	private final ResilientCaller caller;
-	private final List<String> fallbackModels;
-	private final Clock clock;
+    private final ProviderRegistry providers;
+    private final OllamaProperties ollamaProperties;
+    private final RequestLogger requestLogger;
+    private final UsagePolicy usagePolicy;
+    private final ResilientCaller caller;
+    private final List<String> fallbackModels;
+    private final Clock clock;
 
-	@Autowired // several constructors exist, so tell Spring which one to use
-	public ChatCompletionService(ProviderRegistry providers, OllamaProperties ollamaProperties,
-			RequestLogger requestLogger, UsagePolicy usagePolicy, ResilientCaller caller,
-			FailoverProperties failover) {
-		this(providers, ollamaProperties, requestLogger, usagePolicy, caller, failover.fallbackModels(),
-				Clock.systemUTC());
-	}
+    private ExactMatchCache exactMatchCache;
+    private CacheKeyGenerator cacheKeyGenerator;
+    private ObjectMapper cacheObjectMapper;
 
-	/** One provider, no limits, no retries or failover; for unit tests. */
-	ChatCompletionService(LlmProvider provider, OllamaProperties ollamaProperties, RequestLogger requestLogger) {
-		this(provider, ollamaProperties, requestLogger, UsagePolicy.NONE, Clock.systemUTC());
-	}
+    @Autowired
+    public ChatCompletionService(
+            ProviderRegistry providers,
+            OllamaProperties ollamaProperties,
+            RequestLogger requestLogger,
+            UsagePolicy usagePolicy,
+            ResilientCaller caller,
+            FailoverProperties failover) {
 
-	ChatCompletionService(LlmProvider provider, OllamaProperties ollamaProperties, RequestLogger requestLogger,
-			Clock clock) {
-		this(provider, ollamaProperties, requestLogger, UsagePolicy.NONE, clock);
-	}
+        this(
+                providers,
+                ollamaProperties,
+                requestLogger,
+                usagePolicy,
+                caller,
+                failover.fallbackModels(),
+                Clock.systemUTC()
+        );
+    }
 
-	ChatCompletionService(LlmProvider provider, OllamaProperties ollamaProperties, RequestLogger requestLogger,
-			UsagePolicy usagePolicy, Clock clock) {
-		this(ProviderRegistry.single(provider), ollamaProperties, requestLogger, usagePolicy,
-				new ResilientCaller(noRetries()), List.of(), clock);
-	}
+    @Autowired
+    public void configureCache(
+            ExactMatchCache exactMatchCache,
+            CacheKeyGenerator cacheKeyGenerator,
+            ObjectMapper objectMapper) {
 
-	ChatCompletionService(ProviderRegistry providers, OllamaProperties ollamaProperties, RequestLogger requestLogger,
-			UsagePolicy usagePolicy, ResilientCaller caller, List<String> fallbackModels, Clock clock) {
-		this.providers = providers;
-		this.ollamaProperties = ollamaProperties;
-		this.requestLogger = requestLogger;
-		this.usagePolicy = usagePolicy;
-		this.caller = caller;
-		this.fallbackModels = List.copyOf(fallbackModels);
-		this.clock = clock;
-	}
+        this.exactMatchCache = exactMatchCache;
+        this.cacheKeyGenerator = cacheKeyGenerator;
+        this.cacheObjectMapper = objectMapper;
+    }
 
-	static FailoverProperties noRetries() {
-		return new FailoverProperties(1, Duration.ZERO, List.of(), 1000, 100, Duration.ofSeconds(1));
-	}
+    ChatCompletionService(
+            LlmProvider provider,
+            OllamaProperties ollamaProperties,
+            RequestLogger requestLogger) {
 
-	public Mono<ChatCompletionResponse> complete(ChatCompletionRequest request) {
-		return complete(request, RequestContext.anonymous());
-	}
+        this(
+                provider,
+                ollamaProperties,
+                requestLogger,
+                UsagePolicy.NONE,
+                Clock.systemUTC()
+        );
+    }
 
-	public Mono<ChatCompletionResponse> complete(ChatCompletionRequest request, RequestContext context) {
-		boolean auto = isAuto(request.model());
-		String requested = resolveModel(request.model());
+    ChatCompletionService(
+            LlmProvider provider,
+            OllamaProperties ollamaProperties,
+            RequestLogger requestLogger,
+            Clock clock) {
 
-		// 1. Limits (allowed model, rate, budget) decide the first model to try.
-		//    A refusal is logged as BLOCKED and no model is called.
-		Mono<String> chosenModel = Mono.defer(() -> usagePolicy.check(context, requested, auto))
-				.doOnError(RequestBlockedException.class,
-						e -> requestLogger.record(blockedLog(e, auto ? "auto" : requested, context)));
+        this(
+                provider,
+                ollamaProperties,
+                requestLogger,
+                UsagePolicy.NONE,
+                clock
+        );
+    }
 
-		// 2. Call it, failing over to allowed fallback models. Mono.defer so timing starts when it runs.
-		return chosenModel.flatMap(first -> Mono.defer(() -> {
-			long start = clock.millis();
-			return candidates(first, context)
-					.flatMap(models -> attempt(models, 0, request, null))
-					.map(result -> toResponse(result, first, clock.millis() - start))
-					.doOnNext(response -> {
-						requestLogger.record(successLog(response, context));
-						usagePolicy.recordSpend(context, response.switchboard().costUsd());
-					})
-					.doOnError(e -> !(e instanceof RequestBlockedException),
-							e -> requestLogger.record(errorLog(e, first, clock.millis() - start, context)));
-		}));
-	}
+    ChatCompletionService(
+            LlmProvider provider,
+            OllamaProperties ollamaProperties,
+            RequestLogger requestLogger,
+            UsagePolicy usagePolicy,
+            Clock clock) {
 
-	/** The chosen model first, then the fallback models the caller is allowed to use, without repeats. */
-	private Mono<List<String>> candidates(String first, RequestContext context) {
-		List<String> others = fallbackModels.stream().filter(m -> !m.equals(first)).toList();
-		if (others.isEmpty()) {
-			return Mono.just(List.of(first));
-		}
-		return usagePolicy.allowedAmong(context, others).map(allowed -> {
-			LinkedHashSet<String> all = new LinkedHashSet<>();
-			all.add(first);
-			all.addAll(allowed);
-			return new ArrayList<>(all);
-		});
-	}
+        this(
+                ProviderRegistry.single(provider),
+                ollamaProperties,
+                requestLogger,
+                usagePolicy,
+                new ResilientCaller(noRetries()),
+                List.of(),
+                clock
+        );
+    }
 
-	/** Tries models[i] (with retries/breaker); on a failure that may be specific to it, moves on to the next. */
-	private Mono<Attempt> attempt(List<String> models, int i, ChatCompletionRequest request, Throwable previous) {
-		String model = models.get(i);
-		LlmProvider provider = providers.forModel(model);
-		return caller.call(provider, new ProviderRequest(model, request.messages(), request.maxTokens()))
-				.map(r -> new Attempt(provider, model, r))
-				.onErrorResume(e -> {
-					boolean canTryNext = i + 1 < models.size()
-							&& (!(e instanceof ProviderException pe) || pe.canFailOver());
-					if (!canTryNext) {
-						return Mono.error(e);
-					}
-					log.warn("Model {} failed ({}); failing over to {}", model, e.getMessage(), models.get(i + 1));
-					return attempt(models, i + 1, request, e);
-				});
-	}
+    ChatCompletionService(
+            ProviderRegistry providers,
+            OllamaProperties ollamaProperties,
+            RequestLogger requestLogger,
+            UsagePolicy usagePolicy,
+            ResilientCaller caller,
+            List<String> fallbackModels,
+            Clock clock) {
 
-	private record Attempt(LlmProvider provider, String model, ProviderResponse response) {
-	}
+        this.providers = providers;
+        this.ollamaProperties = ollamaProperties;
+        this.requestLogger = requestLogger;
+        this.usagePolicy = usagePolicy;
+        this.caller = caller;
+        this.fallbackModels = List.copyOf(fallbackModels);
+        this.clock = clock;
+    }
 
-	static boolean isAuto(String requested) {
-		return requested == null || requested.isBlank() || AUTO.equalsIgnoreCase(requested.trim());
-	}
+    static FailoverProperties noRetries() {
+        return new FailoverProperties(
+                1,
+                Duration.ZERO,
+                List.of(),
+                1000,
+                100,
+                Duration.ofSeconds(1)
+        );
+    }
 
-	/** "auto" (or no model) → default model. Person B's router will replace this later. */
-	String resolveModel(String requested) {
-		return isAuto(requested) ? ollamaProperties.defaultModel() : requested.trim();
-	}
+    private Mono<ChatCompletionResponse> findCachedResponse(
+            String key,
+            long start) {
 
-	private ChatCompletionResponse toResponse(Attempt a, String firstModel, long latencyMs) {
-		ProviderResponse r = a.response();
-		String modelUsed = r.model() == null ? a.model() : r.model();
-		var choice = new ChatCompletionResponse.Choice(0,
-				new ChatMessage("assistant", r.content()), r.finishReason());
-		var usage = new ChatCompletionResponse.Usage(r.promptTokens(), r.completionTokens(),
-				r.promptTokens() + r.completionTokens());
-		BigDecimal cost = r.costUsd() == null ? BigDecimal.ZERO : r.costUsd();
-		String fallbackFrom = a.model().equals(firstModel) ? null : firstModel;
-		var meta = new ChatCompletionResponse.Switchboard(a.provider().name(), modelUsed,
-				null, cost, latencyMs, false, fallbackFrom); // no cache yet
+        return exactMatchCache.get(key)
+                .flatMap(json -> {
+                    try {
+                        ChatCompletionResponse cached
+                                = cacheObjectMapper.readValue(
+                                        json,
+                                        ChatCompletionResponse.class
+                                );
 
-		return new ChatCompletionResponse(
-				"chatcmpl-" + UUID.randomUUID(),
-				"chat.completion",
-				clock.millis() / 1000,
-				modelUsed,
-				List.of(choice),
-				usage,
-				meta);
-	}
+                        var old = cached.switchboard();
 
-	private RequestLog successLog(ChatCompletionResponse r, RequestContext ctx) {
-		var meta = r.switchboard();
-		return new RequestLog(null, ctx.userId(), ctx.apiKeyId(), meta.provider(), meta.modelUsed(),
-				meta.routerScore(), r.usage().promptTokens(), r.usage().completionTokens(), meta.costUsd(),
-				(int) meta.latencyMs(), meta.cacheHit(), RequestLog.Status.SUCCESS, null, null, now());
-	}
+                        var metadata
+                                = new ChatCompletionResponse.Switchboard(
+                                        old.provider(),
+                                        old.modelUsed(),
+                                        old.routerScore(),
+                                        BigDecimal.ZERO,
+                                        Math.max(0, clock.millis() - start),
+                                        true,
+                                        old.fallbackFrom()
+                                );
 
-	/** Logged against the model the member asked for; the code says which provider failed last. */
-	private RequestLog errorLog(Throwable e, String model, long latencyMs, RequestContext ctx) {
-		String provider = e instanceof ProviderException pe ? pe.provider() : providers.forModel(model).name();
-		String code = e instanceof ProviderException pe ? pe.provider() + "_unavailable" : "server_error";
-		return new RequestLog(null, ctx.userId(), ctx.apiKeyId(), provider, model, null, 0, 0,
-				BigDecimal.ZERO, (int) Math.max(0, latencyMs), false, RequestLog.Status.ERROR, code, null, now());
-	}
+                        return Mono.just(
+                                new ChatCompletionResponse(
+                                        "chatcmpl-" + UUID.randomUUID(),
+                                        cached.object(),
+                                        clock.millis() / 1000,
+                                        cached.model(),
+                                        cached.choices(),
+                                        cached.usage(),
+                                        metadata
+                                )
+                        );
 
-	private RequestLog blockedLog(RequestBlockedException e, String model, RequestContext ctx) {
-		return new RequestLog(null, ctx.userId(), ctx.apiKeyId(), null, model, null, 0, 0, BigDecimal.ZERO, 0,
-				false, RequestLog.Status.BLOCKED, null, e.reason(), now());
-	}
+                    } catch (Exception e) {
+                        log.warn("Invalid cached response", e);
+                        return Mono.empty();
+                    }
+                })
+                .onErrorResume(e -> {
+                    log.warn("Redis cache lookup failed", e);
+                    return Mono.empty();
+                });
+    }
 
-	private Instant now() {
-		return clock.instant().truncatedTo(ChronoUnit.MICROS); // Postgres precision
-	}
+    public Mono<ChatCompletionResponse> complete(
+            ChatCompletionRequest request) {
+
+        return complete(request, RequestContext.anonymous());
+    }
+
+    public Mono<ChatCompletionResponse> complete(
+            ChatCompletionRequest request,
+            RequestContext context) {
+
+        boolean auto = isAuto(request.model());
+        String requested = resolveModel(request.model());
+
+        Mono<String> chosenModel
+                = Mono.defer(()
+                        -> usagePolicy.check(context, requested, auto)
+                ).doOnError(
+                        RequestBlockedException.class,
+                        e -> requestLogger.record(
+                                blockedLog(
+                                        e,
+                                        auto ? "auto" : requested,
+                                        context
+                                )
+                        )
+                );
+
+        return chosenModel.flatMap(first
+                -> Mono.defer(() -> {
+
+                    long start = clock.millis();
+
+                    return candidates(first, context)
+                            .flatMap(models
+                                    -> attempt(
+                                    models,
+                                    0,
+                                    request,
+                                    null
+                            )
+                            )
+                            .map(result
+                                    -> toResponse(
+                                    result,
+                                    first,
+                                    clock.millis() - start
+                            )
+                            )
+                            .doOnNext(response -> {
+                                requestLogger.record(
+                                        successLog(response, context)
+                                );
+
+                                usagePolicy.recordSpend(
+                                        context,
+                                        response.switchboard().costUsd()
+                                );
+                            })
+                            .doOnError(
+                                    e -> !(e instanceof RequestBlockedException),
+                                    e -> requestLogger.record(
+                                            errorLog(
+                                                    e,
+                                                    first,
+                                                    clock.millis() - start,
+                                                    context
+                                            )
+                                    )
+                            );
+                })
+        );
+    }
+
+    private Mono<List<String>> candidates(
+            String first,
+            RequestContext context) {
+
+        List<String> others = fallbackModels.stream()
+                .filter(m -> !m.equals(first))
+                .toList();
+
+        if (others.isEmpty()) {
+            return Mono.just(List.of(first));
+        }
+
+        return usagePolicy.allowedAmong(context, others)
+                .map(allowed -> {
+
+                    LinkedHashSet<String> all
+                            = new LinkedHashSet<>();
+
+                    all.add(first);
+                    all.addAll(allowed);
+
+                    return new ArrayList<>(all);
+                });
+    }
+
+    private Mono<Attempt> attempt(
+            List<String> models,
+            int i,
+            ChatCompletionRequest request,
+            Throwable previous) {
+
+        String model = models.get(i);
+
+        LlmProvider provider
+                = providers.forModel(model);
+
+        return caller.call(
+                provider,
+                new ProviderRequest(
+                        model,
+                        request.messages(),
+                        request.maxTokens()
+                )
+        )
+                .map(r
+                        -> new Attempt(
+                        provider,
+                        model,
+                        r
+                )
+                )
+                .onErrorResume(e -> {
+
+                    boolean canTryNext
+                            = i + 1 < models.size()
+                            && (!(e instanceof ProviderException pe)
+                            || pe.canFailOver());
+
+                    if (!canTryNext) {
+                        return Mono.error(e);
+                    }
+
+                    log.warn(
+                            "Model {} failed ({}); failing over to {}",
+                            model,
+                            e.getMessage(),
+                            models.get(i + 1)
+                    );
+
+                    return attempt(
+                            models,
+                            i + 1,
+                            request,
+                            e
+                    );
+                });
+    }
+
+    private record Attempt(
+            LlmProvider provider,
+            String model,
+            ProviderResponse response) {
+    }
+
+    static boolean isAuto(String requested) {
+        return requested == null
+                || requested.isBlank()
+                || AUTO.equalsIgnoreCase(requested.trim());
+    }
+
+    String resolveModel(String requested) {
+        return isAuto(requested)
+                ? ollamaProperties.defaultModel()
+                : requested.trim();
+    }
+
+    private ChatCompletionResponse toResponse(
+            Attempt a,
+            String firstModel,
+            long latencyMs) {
+
+        ProviderResponse r = a.response();
+
+        String modelUsed
+                = r.model() == null
+                ? a.model()
+                : r.model();
+
+        var choice
+                = new ChatCompletionResponse.Choice(
+                        0,
+                        new ChatMessage(
+                                "assistant",
+                                r.content()
+                        ),
+                        r.finishReason()
+                );
+
+        var usage
+                = new ChatCompletionResponse.Usage(
+                        r.promptTokens(),
+                        r.completionTokens(),
+                        r.promptTokens()
+                        + r.completionTokens()
+                );
+
+        BigDecimal cost
+                = r.costUsd() == null
+                ? BigDecimal.ZERO
+                : r.costUsd();
+
+        String fallbackFrom
+                = a.model().equals(firstModel)
+                ? null
+                : firstModel;
+
+        var meta
+                = new ChatCompletionResponse.Switchboard(
+                        a.provider().name(),
+                        modelUsed,
+                        null,
+                        cost,
+                        latencyMs,
+                        false,
+                        fallbackFrom
+                );
+
+        return new ChatCompletionResponse(
+                "chatcmpl-" + UUID.randomUUID(),
+                "chat.completion",
+                clock.millis() / 1000,
+                modelUsed,
+                List.of(choice),
+                usage,
+                meta
+        );
+    }
+
+    private RequestLog successLog(
+            ChatCompletionResponse r,
+            RequestContext ctx) {
+
+        var meta = r.switchboard();
+
+        return new RequestLog(
+                null,
+                ctx.userId(),
+                ctx.apiKeyId(),
+                meta.provider(),
+                meta.modelUsed(),
+                meta.routerScore(),
+                r.usage().promptTokens(),
+                r.usage().completionTokens(),
+                meta.costUsd(),
+                (int) meta.latencyMs(),
+                meta.cacheHit(),
+                RequestLog.Status.SUCCESS,
+                null,
+                null,
+                now()
+        );
+    }
+
+    private RequestLog errorLog(
+            Throwable e,
+            String model,
+            long latencyMs,
+            RequestContext ctx) {
+
+        String provider
+                = e instanceof ProviderException pe
+                        ? pe.provider()
+                        : providers.forModel(model).name();
+
+        String code
+                = e instanceof ProviderException pe
+                        ? pe.provider() + "_unavailable"
+                        : "server_error";
+
+        return new RequestLog(
+                null,
+                ctx.userId(),
+                ctx.apiKeyId(),
+                provider,
+                model,
+                null,
+                0,
+                0,
+                BigDecimal.ZERO,
+                (int) Math.max(0, latencyMs),
+                false,
+                RequestLog.Status.ERROR,
+                code,
+                null,
+                now()
+        );
+    }
+
+    private RequestLog blockedLog(
+            RequestBlockedException e,
+            String model,
+            RequestContext ctx) {
+
+        return new RequestLog(
+                null,
+                ctx.userId(),
+                ctx.apiKeyId(),
+                null,
+                model,
+                null,
+                0,
+                0,
+                BigDecimal.ZERO,
+                0,
+                false,
+                RequestLog.Status.BLOCKED,
+                null,
+                e.reason(),
+                now()
+        );
+    }
+
+    private Instant now() {
+        return clock.instant()
+                .truncatedTo(ChronoUnit.MICROS);
+    }
 }
