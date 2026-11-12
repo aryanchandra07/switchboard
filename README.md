@@ -241,14 +241,18 @@ The 100-task evaluation achieved a 91% request success rate, while the routing b
 
 By combining model benchmarking, intelligent routing, heuristic evaluation, and interactive visualization, the project provides a foundation for further research and development in efficient LLM systems.
 
-## 16. Author
+## 16. Authors
 
-**Shaik Ahamed Ali**
-**Aryan Chandra**
-**Chaitanya Narkedamilly**
+1. **Shaik Ahamed Ali**
+2. **Aryan Chandra**
+3. **Chaitanya Narkedamillly**
 
-M.E. Software Systems  
-BITS Pilani, Dubai Campus
+**Programme:** M.E. Software Systems  
+**University:** BITS Pilani, Dubai Campus
+
+**Project:** Switchboard – LLM Model Evaluation and Intelligent Routing System
+
+**Technologies:** Python | Ollama | Streamlit | Pandas | NumPy | Plotly
 
 ---
 
