@@ -4,6 +4,7 @@ import java.util.UUID;
 
 import org.springframework.data.repository.reactive.ReactiveCrudRepository;
 
+import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 /**
@@ -16,4 +17,6 @@ public interface UserRepository extends ReactiveCrudRepository<User, UUID> {
 	Mono<User> findByEmail(String email);
 
 	Mono<Boolean> existsByRole(Role role);
+
+	Flux<User> findAllByRoleOrderByCreatedAtAsc(Role role);
 }

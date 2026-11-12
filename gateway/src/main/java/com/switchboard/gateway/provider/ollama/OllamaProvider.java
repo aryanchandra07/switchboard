@@ -16,6 +16,7 @@ import com.switchboard.gateway.provider.ProviderException;
 import com.switchboard.gateway.provider.ProviderRequest;
 import com.switchboard.gateway.provider.ProviderResponse;
 
+import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 /**
@@ -52,6 +53,18 @@ public class OllamaProvider implements LlmProvider {
 				.onErrorMap(e -> !(e instanceof ProviderException), this::toProviderException);
 	}
 
+	/** Installed models from GET /api/tags. ":latest" is dropped, so "llama3.2:latest" becomes "llama3.2". */
+	@Override
+	public Flux<String> listModels() {
+		return webClient.get()
+				.uri("/api/tags")
+				.retrieve()
+				.bodyToMono(OllamaTagsResponse.class)
+				.timeout(java.time.Duration.ofSeconds(5))
+				.flatMapMany(t -> Flux.fromIterable(t.models() == null ? List.of() : t.models()))
+				.map(m -> m.name().endsWith(":latest") ? m.name().substring(0, m.name().length() - 7) : m.name());
+	}
+
 	private static ProviderResponse toProviderResponse(OllamaChatResponse r) {
 		return new ProviderResponse(
 				r.model(),
@@ -63,17 +76,27 @@ public class OllamaProvider implements LlmProvider {
 
 	/** Wraps any failure in a ProviderException with a message that is safe to show a client. */
 	private ProviderException toProviderException(Throwable e) {
-		String message;
 		if (e instanceof TimeoutException) {
-			message = "Ollama did not respond within " + properties.timeout().toSeconds() + "s";
+			return new ProviderException(name(), "Ollama did not respond within " + properties.timeout().toSeconds()
+					+ "s", e, ProviderException.Kind.TIMEOUT);
 		}
-		else if (e instanceof WebClientResponseException w) {
-			message = "Ollama returned HTTP " + w.getStatusCode().value() + ": " + w.getResponseBodyAsString();
+		if (e instanceof WebClientResponseException w) {
+			// 4xx (e.g. 404 model not found) won't change on retry; 5xx might.
+			var kind = w.getStatusCode().is4xxClientError() ? ProviderException.Kind.PERMANENT
+					: ProviderException.Kind.TRANSIENT;
+			return new ProviderException(name(), "Ollama returned HTTP " + w.getStatusCode().value() + ": "
+					+ w.getResponseBodyAsString(), e, kind);
 		}
-		else {
-			message = "Could not reach Ollama at " + properties.baseUrl();
-		}
-		return new ProviderException(name(), message, e);
+		return new ProviderException(name(), "Could not reach Ollama at " + properties.baseUrl(), e,
+				ProviderException.Kind.TRANSIENT);
+	}
+
+	@JsonIgnoreProperties(ignoreUnknown = true)
+	record OllamaTagsResponse(List<OllamaModel> models) {
+	}
+
+	@JsonIgnoreProperties(ignoreUnknown = true)
+	record OllamaModel(String name) {
 	}
 
 	/** JSON we send to Ollama. */

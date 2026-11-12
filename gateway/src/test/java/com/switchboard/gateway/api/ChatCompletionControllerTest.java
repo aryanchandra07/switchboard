@@ -21,9 +21,15 @@ import org.springframework.test.web.reactive.server.WebTestClient;
 import org.springframework.context.annotation.Import;
 import org.springframework.test.context.ActiveProfiles;
 
+import org.springframework.http.HttpHeaders;
+import org.springframework.security.crypto.password.PasswordEncoder;
+
+import com.switchboard.gateway.TestFixtures;
 import com.switchboard.gateway.TestcontainersConfiguration;
+import com.switchboard.gateway.apikey.ApiKeyService;
+import com.switchboard.gateway.user.UserRepository;
 import com.switchboard.gateway.api.dto.ChatMessage;
-import com.switchboard.gateway.provider.LlmProvider;
+import com.switchboard.gateway.provider.ollama.OllamaProvider;
 import com.switchboard.gateway.provider.ProviderException;
 import com.switchboard.gateway.provider.ProviderRequest;
 import com.switchboard.gateway.provider.ProviderResponse;
@@ -44,21 +50,34 @@ class ChatCompletionControllerTest {
 	@Autowired
 	private ApplicationContext context;
 
-	@MockitoBean
-	private LlmProvider provider;
+	@MockitoBean // replaces the real Ollama provider; the Mock provider stays real
+	private OllamaProvider provider;
+
+	@Autowired
+	private UserRepository users;
+	@Autowired
+	private PasswordEncoder passwordEncoder;
+	@Autowired
+	private ApiKeyService apiKeys;
+	@Autowired
+	private com.switchboard.gateway.member.MemberService memberService;
 
 	private WebTestClient client;
+	private String apiKey;
 
 	@BeforeEach
 	void setUp() {
 		client = WebTestClient.bindToApplicationContext(context).build();
+		var member = TestFixtures.createMember(users, passwordEncoder);
+		TestFixtures.allowModels(memberService, member.id());
+		apiKey = TestFixtures.createKey(apiKeys, member).fullKey();
 		when(provider.name()).thenReturn("ollama");
 		when(provider.chat(any())).thenReturn(
 				Mono.just(new ProviderResponse("llama3.2", "Hello from the model", "stop", 11, 4)));
 	}
 
 	private WebTestClient.ResponseSpec post(String json) {
-		return client.post().uri(URL).contentType(MediaType.APPLICATION_JSON).bodyValue(json).exchange();
+		return client.post().uri(URL).header(HttpHeaders.AUTHORIZATION, "Bearer " + apiKey).contentType(MediaType.APPLICATION_JSON).bodyValue(json).exchange();
 	}
 
 	// ---------- success ----------
@@ -186,7 +205,7 @@ class ChatCompletionControllerTest {
 
 	@Test
 	void emptyBody_returns400() {
-		client.post().uri(URL).contentType(MediaType.APPLICATION_JSON).exchange()
+		client.post().uri(URL).header(HttpHeaders.AUTHORIZATION, "Bearer " + apiKey).contentType(MediaType.APPLICATION_JSON).exchange()
 				.expectStatus().isBadRequest()
 				.expectBody().jsonPath("$.error.code").isEqualTo("invalid_json");
 		verify(provider, never()).chat(any());
@@ -194,14 +213,14 @@ class ChatCompletionControllerTest {
 
 	@Test
 	void wrongContentType_returns415() {
-		client.post().uri(URL).contentType(MediaType.TEXT_PLAIN).bodyValue("hello").exchange()
+		client.post().uri(URL).header(HttpHeaders.AUTHORIZATION, "Bearer " + apiKey).contentType(MediaType.TEXT_PLAIN).bodyValue("hello").exchange()
 				.expectStatus().isEqualTo(415)
 				.expectBody().jsonPath("$.error.type").isEqualTo("invalid_request_error");
 	}
 
 	@Test
 	void getInsteadOfPost_returns405() {
-		client.get().uri(URL).exchange().expectStatus().isEqualTo(405);
+		client.get().uri(URL).header(HttpHeaders.AUTHORIZATION, "Bearer " + apiKey).exchange().expectStatus().isEqualTo(405);
 	}
 
 	// ---------- provider errors ----------

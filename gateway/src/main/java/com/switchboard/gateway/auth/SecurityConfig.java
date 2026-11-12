@@ -8,6 +8,10 @@ import javax.crypto.spec.SecretKeySpec;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.annotation.Order;
+import org.springframework.security.authentication.DisabledException;
+import org.springframework.security.core.AuthenticationException;
+import org.springframework.security.web.server.util.matcher.ServerWebExchangeMatchers;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -42,7 +46,34 @@ import reactor.core.publisher.Mono;
 @EnableWebFluxSecurity
 public class SecurityConfig {
 
+	/**
+	 * Rules for the model API (/v1/**): every call needs "Authorization: Bearer" with either an sb- key
+	 * or a web login token. Checked first (@Order(1)); everything else falls through to the chain below.
+	 */
 	@Bean
+	@Order(1)
+	SecurityWebFilterChain apiSecurityWebFilterChain(ServerHttpSecurity http,
+			MemberAuthenticationManager memberAuthenticationManager) {
+		return http
+				.securityMatcher(ServerWebExchangeMatchers.pathMatchers("/v1/**"))
+				.csrf(ServerHttpSecurity.CsrfSpec::disable)
+				.httpBasic(ServerHttpSecurity.HttpBasicSpec::disable)
+				.formLogin(ServerHttpSecurity.FormLoginSpec::disable)
+				.logout(ServerHttpSecurity.LogoutSpec::disable)
+				.securityContextRepository(NoOpServerSecurityContextRepository.getInstance())
+				.authorizeExchange(auth -> auth.anyExchange().authenticated())
+				.oauth2ResourceServer(oauth -> oauth
+						.authenticationManagerResolver(exchange -> Mono.just(memberAuthenticationManager))
+						.authenticationEntryPoint(SecurityConfig::apiAuthFailure))
+				.exceptionHandling(ex -> ex
+						.authenticationEntryPoint(SecurityConfig::apiAuthFailure)
+						.accessDeniedHandler((exchange, e) -> forbidden(exchange)))
+				.build();
+	}
+
+	/** Rules for everything else: web login (JWT) and admin pages. */
+	@Bean
+	@Order(2)
 	SecurityWebFilterChain securityWebFilterChain(ServerHttpSecurity http) {
 		return http
 				.csrf(ServerHttpSecurity.CsrfSpec::disable)
@@ -53,8 +84,6 @@ public class SecurityConfig {
 				.authorizeExchange(auth -> auth
 						.pathMatchers(HttpMethod.POST, "/auth/login").permitAll()
 						.pathMatchers("/actuator/health", "/actuator/health/**").permitAll()
-						// TEMPORARY: open until member sb- API keys are added (next steps).
-						.pathMatchers("/v1/**").permitAll()
 						.pathMatchers("/admin/**").hasRole("ADMIN")
 						.anyExchange().authenticated())
 				.oauth2ResourceServer(oauth -> oauth
@@ -111,6 +140,17 @@ public class SecurityConfig {
 				+ "\"}}";
 		var buffer = response.bufferFactory().wrap(json.getBytes(StandardCharsets.UTF_8));
 		return response.writeWith(Mono.just(buffer));
+	}
+
+	/** /v1 auth failures: 403 for a disabled account, 401 for a missing, unknown or revoked key/token. */
+	private static Mono<Void> apiAuthFailure(ServerWebExchange exchange, AuthenticationException e) {
+		if (e instanceof DisabledException) {
+			return writeError(exchange, HttpStatus.FORBIDDEN, "This account has been disabled",
+					"permission_error", "account_disabled");
+		}
+		return writeError(exchange, HttpStatus.UNAUTHORIZED,
+				"Missing, invalid or revoked API key. Send \\\"Authorization: Bearer sb-...\\\"",
+				"authentication_error", "invalid_api_key");
 	}
 
 	private static Mono<Void> unauthorized(ServerWebExchange exchange) {

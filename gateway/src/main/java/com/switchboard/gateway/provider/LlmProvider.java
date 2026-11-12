@@ -1,5 +1,6 @@
 package com.switchboard.gateway.provider;
 
+import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 /**
@@ -13,4 +14,9 @@ public interface LlmProvider {
 
 	/** Sends the conversation to the model. The Mono completes when the full reply arrives. */
 	Mono<ProviderResponse> chat(ProviderRequest request);
+
+	/** Model names this provider can serve right now. Empty if unknown. */
+	default Flux<String> listModels() {
+		return Flux.empty();
+	}
 }
