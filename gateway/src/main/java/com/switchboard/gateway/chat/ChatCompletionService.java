@@ -2,11 +2,16 @@ package com.switchboard.gateway.chat;
 
 import java.math.BigDecimal;
 import java.time.Clock;
+import java.time.Duration;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
+import java.util.ArrayList;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.UUID;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -16,36 +21,52 @@ import com.switchboard.gateway.api.dto.ChatMessage;
 import com.switchboard.gateway.limits.RequestBlockedException;
 import com.switchboard.gateway.provider.LlmProvider;
 import com.switchboard.gateway.provider.ProviderException;
+import com.switchboard.gateway.provider.ProviderRegistry;
 import com.switchboard.gateway.provider.ProviderRequest;
 import com.switchboard.gateway.provider.ProviderResponse;
 import com.switchboard.gateway.provider.ollama.OllamaProperties;
 import com.switchboard.gateway.requestlog.RequestLog;
 import com.switchboard.gateway.requestlog.RequestLogger;
+import com.switchboard.gateway.resilience.FailoverProperties;
+import com.switchboard.gateway.resilience.ResilientCaller;
 
 import reactor.core.publisher.Mono;
 
 /**
- * The request pipeline. For now: pick a model, call the provider, build the OpenAI-style reply,
- * and log the outcome. Auth, guardrails, cache, router and failover will slot in here later.
+ * The request pipeline:
+ * <ol>
+ * <li>pick the model ("auto" → default; Person B's router will replace this),</li>
+ * <li>check the member's limits (allowed model, rate, budget),</li>
+ * <li>call the model with retries and a circuit breaker, failing over to the next allowed fallback model
+ * if it keeps failing (FR-11),</li>
+ * <li>build the OpenAI-style reply and log the outcome.</li>
+ * </ol>
+ * Guardrails and cache (Person C) will slot in before step 3.
  */
 @Service
 public class ChatCompletionService {
 
+	private static final Logger log = LoggerFactory.getLogger(ChatCompletionService.class);
+
 	static final String AUTO = "auto";
 
-	private final LlmProvider provider;
+	private final ProviderRegistry providers;
 	private final OllamaProperties ollamaProperties;
 	private final RequestLogger requestLogger;
 	private final UsagePolicy usagePolicy;
+	private final ResilientCaller caller;
+	private final List<String> fallbackModels;
 	private final Clock clock;
 
 	@Autowired // several constructors exist, so tell Spring which one to use
-	public ChatCompletionService(LlmProvider provider, OllamaProperties ollamaProperties,
-			RequestLogger requestLogger, UsagePolicy usagePolicy) {
-		this(provider, ollamaProperties, requestLogger, usagePolicy, Clock.systemUTC());
+	public ChatCompletionService(ProviderRegistry providers, OllamaProperties ollamaProperties,
+			RequestLogger requestLogger, UsagePolicy usagePolicy, ResilientCaller caller,
+			FailoverProperties failover) {
+		this(providers, ollamaProperties, requestLogger, usagePolicy, caller, failover.fallbackModels(),
+				Clock.systemUTC());
 	}
 
-	/** Without limits; for unit tests. */
+	/** One provider, no limits, no retries or failover; for unit tests. */
 	ChatCompletionService(LlmProvider provider, OllamaProperties ollamaProperties, RequestLogger requestLogger) {
 		this(provider, ollamaProperties, requestLogger, UsagePolicy.NONE, Clock.systemUTC());
 	}
@@ -57,11 +78,23 @@ public class ChatCompletionService {
 
 	ChatCompletionService(LlmProvider provider, OllamaProperties ollamaProperties, RequestLogger requestLogger,
 			UsagePolicy usagePolicy, Clock clock) {
-		this.provider = provider;
+		this(ProviderRegistry.single(provider), ollamaProperties, requestLogger, usagePolicy,
+				new ResilientCaller(noRetries()), List.of(), clock);
+	}
+
+	ChatCompletionService(ProviderRegistry providers, OllamaProperties ollamaProperties, RequestLogger requestLogger,
+			UsagePolicy usagePolicy, ResilientCaller caller, List<String> fallbackModels, Clock clock) {
+		this.providers = providers;
 		this.ollamaProperties = ollamaProperties;
 		this.requestLogger = requestLogger;
 		this.usagePolicy = usagePolicy;
+		this.caller = caller;
+		this.fallbackModels = List.copyOf(fallbackModels);
 		this.clock = clock;
+	}
+
+	static FailoverProperties noRetries() {
+		return new FailoverProperties(1, Duration.ZERO, List.of(), 1000, 100, Duration.ofSeconds(1));
 	}
 
 	public Mono<ChatCompletionResponse> complete(ChatCompletionRequest request) {
@@ -72,23 +105,59 @@ public class ChatCompletionService {
 		boolean auto = isAuto(request.model());
 		String requested = resolveModel(request.model());
 
-		// 1. Limits (allowed model, rate, budget) decide the final model.
-		//    A refusal is logged as BLOCKED and the model is never called.
+		// 1. Limits (allowed model, rate, budget) decide the first model to try.
+		//    A refusal is logged as BLOCKED and no model is called.
 		Mono<String> chosenModel = Mono.defer(() -> usagePolicy.check(context, requested, auto))
 				.doOnError(RequestBlockedException.class,
 						e -> requestLogger.record(blockedLog(e, auto ? "auto" : requested, context)));
 
-		// 2. Model call. Mono.defer so the start time is taken when it actually runs.
-		return chosenModel.flatMap(model -> Mono.defer(() -> {
+		// 2. Call it, failing over to allowed fallback models. Mono.defer so timing starts when it runs.
+		return chosenModel.flatMap(first -> Mono.defer(() -> {
 			long start = clock.millis();
-			return provider.chat(new ProviderRequest(model, request.messages()))
-					.map(r -> toResponse(r, model, clock.millis() - start))
+			return candidates(first, context)
+					.flatMap(models -> attempt(models, 0, request, null))
+					.map(result -> toResponse(result, first, clock.millis() - start))
 					.doOnNext(response -> {
 						requestLogger.record(successLog(response, context));
 						usagePolicy.recordSpend(context, response.switchboard().costUsd());
 					})
-					.doOnError(e -> requestLogger.record(errorLog(e, model, clock.millis() - start, context)));
+					.doOnError(e -> !(e instanceof RequestBlockedException),
+							e -> requestLogger.record(errorLog(e, first, clock.millis() - start, context)));
 		}));
+	}
+
+	/** The chosen model first, then the fallback models the caller is allowed to use, without repeats. */
+	private Mono<List<String>> candidates(String first, RequestContext context) {
+		List<String> others = fallbackModels.stream().filter(m -> !m.equals(first)).toList();
+		if (others.isEmpty()) {
+			return Mono.just(List.of(first));
+		}
+		return usagePolicy.allowedAmong(context, others).map(allowed -> {
+			LinkedHashSet<String> all = new LinkedHashSet<>();
+			all.add(first);
+			all.addAll(allowed);
+			return new ArrayList<>(all);
+		});
+	}
+
+	/** Tries models[i] (with retries/breaker); on a failure that may be specific to it, moves on to the next. */
+	private Mono<Attempt> attempt(List<String> models, int i, ChatCompletionRequest request, Throwable previous) {
+		String model = models.get(i);
+		LlmProvider provider = providers.forModel(model);
+		return caller.call(provider, new ProviderRequest(model, request.messages(), request.maxTokens()))
+				.map(r -> new Attempt(provider, model, r))
+				.onErrorResume(e -> {
+					boolean canTryNext = i + 1 < models.size()
+							&& (!(e instanceof ProviderException pe) || pe.canFailOver());
+					if (!canTryNext) {
+						return Mono.error(e);
+					}
+					log.warn("Model {} failed ({}); failing over to {}", model, e.getMessage(), models.get(i + 1));
+					return attempt(models, i + 1, request, e);
+				});
+	}
+
+	private record Attempt(LlmProvider provider, String model, ProviderResponse response) {
 	}
 
 	static boolean isAuto(String requested) {
@@ -100,14 +169,17 @@ public class ChatCompletionService {
 		return isAuto(requested) ? ollamaProperties.defaultModel() : requested.trim();
 	}
 
-	private ChatCompletionResponse toResponse(ProviderResponse r, String requestedModel, long latencyMs) {
-		String modelUsed = r.model() == null ? requestedModel : r.model();
+	private ChatCompletionResponse toResponse(Attempt a, String firstModel, long latencyMs) {
+		ProviderResponse r = a.response();
+		String modelUsed = r.model() == null ? a.model() : r.model();
 		var choice = new ChatCompletionResponse.Choice(0,
 				new ChatMessage("assistant", r.content()), r.finishReason());
 		var usage = new ChatCompletionResponse.Usage(r.promptTokens(), r.completionTokens(),
 				r.promptTokens() + r.completionTokens());
-		var meta = new ChatCompletionResponse.Switchboard(provider.name(), modelUsed,
-				null, BigDecimal.ZERO, latencyMs, false); // local models are free; no cache yet
+		BigDecimal cost = r.costUsd() == null ? BigDecimal.ZERO : r.costUsd();
+		String fallbackFrom = a.model().equals(firstModel) ? null : firstModel;
+		var meta = new ChatCompletionResponse.Switchboard(a.provider().name(), modelUsed,
+				null, cost, latencyMs, false, fallbackFrom); // no cache yet
 
 		return new ChatCompletionResponse(
 				"chatcmpl-" + UUID.randomUUID(),
@@ -126,9 +198,11 @@ public class ChatCompletionService {
 				(int) meta.latencyMs(), meta.cacheHit(), RequestLog.Status.SUCCESS, null, null, now());
 	}
 
+	/** Logged against the model the member asked for; the code says which provider failed last. */
 	private RequestLog errorLog(Throwable e, String model, long latencyMs, RequestContext ctx) {
+		String provider = e instanceof ProviderException pe ? pe.provider() : providers.forModel(model).name();
 		String code = e instanceof ProviderException pe ? pe.provider() + "_unavailable" : "server_error";
-		return new RequestLog(null, ctx.userId(), ctx.apiKeyId(), provider.name(), model, null, 0, 0,
+		return new RequestLog(null, ctx.userId(), ctx.apiKeyId(), provider, model, null, 0, 0,
 				BigDecimal.ZERO, (int) Math.max(0, latencyMs), false, RequestLog.Status.ERROR, code, null, now());
 	}
 

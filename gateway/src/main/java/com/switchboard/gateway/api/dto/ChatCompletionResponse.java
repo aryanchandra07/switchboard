@@ -30,13 +30,23 @@ public record ChatCompletionResponse(
 			@JsonProperty("total_tokens") int totalTokens) {
 	}
 
-	/** Routing metadata. routerScore is null until Person B's router service is wired in. */
+	/**
+	 * Routing metadata. routerScore is null until Person B's router service is wired in.
+	 * fallbackFrom is set only when the first model failed and another one answered (FR-11).
+	 */
 	public record Switchboard(
 			String provider,
 			@JsonProperty("model_used") String modelUsed,
 			@JsonProperty("router_score") Double routerScore,
 			@JsonProperty("cost_usd") BigDecimal costUsd,
 			@JsonProperty("latency_ms") long latencyMs,
-			@JsonProperty("cache_hit") boolean cacheHit) {
+			@JsonProperty("cache_hit") boolean cacheHit,
+			@JsonProperty("fallback_from") @com.fasterxml.jackson.annotation.JsonInclude(
+					com.fasterxml.jackson.annotation.JsonInclude.Include.NON_NULL) String fallbackFrom) {
+
+		public Switchboard(String provider, String modelUsed, Double routerScore, BigDecimal costUsd,
+				long latencyMs, boolean cacheHit) {
+			this(provider, modelUsed, routerScore, costUsd, latencyMs, cacheHit, null);
+		}
 	}
 }

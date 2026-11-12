@@ -20,6 +20,7 @@ import com.switchboard.gateway.apikey.ApiKeyService;
 import com.switchboard.gateway.auth.AuthException;
 import com.switchboard.gateway.limits.RequestBlockedException;
 import com.switchboard.gateway.member.MemberService;
+import com.switchboard.gateway.provider.InvalidProviderRequestException;
 import com.switchboard.gateway.provider.ProviderException;
 import com.switchboard.gateway.providerkey.ProviderKeyService;
 
@@ -117,6 +118,12 @@ public class ApiExceptionHandler {
 	ResponseEntity<ErrorResponse> handleBudget(RequestBlockedException.BudgetExceeded e) {
 		return ResponseEntity.status(HttpStatus.TOO_MANY_REQUESTS)
 				.body(ErrorResponse.of(e.getMessage(), "insufficient_quota", e.reason(), e.details()));
+	}
+
+	/** Something the client asked for that the provider can't accept (e.g. max_tokens too large) → 400. */
+	@ExceptionHandler(InvalidProviderRequestException.class)
+	ResponseEntity<ErrorResponse> handleInvalidProviderRequest(InvalidProviderRequestException e) {
+		return error(HttpStatus.BAD_REQUEST, e.getMessage(), "invalid_request_error", "invalid_model_request");
 	}
 
 	/** The model backend failed (down, timeout, model not found). */

@@ -16,6 +16,11 @@ public interface UsagePolicy {
 	 */
 	Mono<String> check(RequestContext context, String model, boolean auto);
 
+	/** Of these candidate models (e.g. failover targets), the ones this caller may use, in the same order. */
+	default Mono<java.util.List<String>> allowedAmong(RequestContext context, java.util.List<String> models) {
+		return Mono.just(models);
+	}
+
 	/** Records the cost of a successful call. Must never throw or delay the response. */
 	void recordSpend(RequestContext context, BigDecimal costUsd);
 

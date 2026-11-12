@@ -57,6 +57,16 @@ public class MemberUsagePolicy implements UsagePolicy {
 		return Mono.error(new RequestBlockedException.ModelNotAllowed(auto ? "auto" : model, allowed));
 	}
 
+	/** Failover targets must be on the member's allowed list too. */
+	@Override
+	public Mono<List<String>> allowedAmong(RequestContext ctx, List<String> models) {
+		if (!ctx.isLimited()) {
+			return Mono.just(models);
+		}
+		return members.limitsForUser(ctx.userId())
+				.map(limits -> models.stream().filter(limits.allowedModels()::contains).toList());
+	}
+
 	static Mono<Void> checkBudget(Spend spend, MemberLimits limits) {
 		if (spend.daily().compareTo(limits.dailyBudgetUsd()) >= 0) {
 			return Mono.error(new RequestBlockedException.BudgetExceeded("daily", spend, limits.dailyBudgetUsd(),

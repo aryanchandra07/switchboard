@@ -30,7 +30,7 @@ import com.switchboard.gateway.TestcontainersConfiguration;
 import com.switchboard.gateway.apikey.ApiKeyService;
 import com.switchboard.gateway.user.User;
 import com.switchboard.gateway.user.UserRepository;
-import com.switchboard.gateway.provider.LlmProvider;
+import com.switchboard.gateway.provider.ollama.OllamaProvider;
 import com.switchboard.gateway.provider.ProviderException;
 import com.switchboard.gateway.provider.ProviderResponse;
 
@@ -50,8 +50,8 @@ class RequestLogIntegrationTest {
 	@Autowired
 	private DatabaseClient db;
 
-	@MockitoBean
-	private LlmProvider provider;
+	@MockitoBean // replaces the real Ollama provider; the Mock provider stays real
+	private OllamaProvider provider;
 
 	@Autowired
 	private UserRepository users;

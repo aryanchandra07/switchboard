@@ -256,7 +256,7 @@ class ChatCompletionServiceTest {
 			assertThat(l.status()).isEqualTo(RequestLog.Status.ERROR);
 			assertThat(l.errorCode()).isEqualTo("ollama_unavailable");
 			assertThat(l.model()).isEqualTo("qwen2.5:7b");
-			assertThat(l.provider()).isEqualTo("fake");
+			assertThat(l.provider()).isEqualTo("ollama"); // the provider named in the error
 			assertThat(l.tokensIn()).isZero();
 			assertThat(l.tokensOut()).isZero();
 		});

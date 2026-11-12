@@ -29,7 +29,7 @@ import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.reactive.server.WebTestClient;
 
 import com.switchboard.gateway.TestcontainersConfiguration;
-import com.switchboard.gateway.provider.LlmProvider;
+import com.switchboard.gateway.provider.ollama.OllamaProvider;
 import com.switchboard.gateway.provider.ProviderRequest;
 import com.switchboard.gateway.provider.ProviderResponse;
 
@@ -51,8 +51,8 @@ class ModelAccessIntegrationTest {
 	@Autowired
 	private ReactiveStringRedisTemplate redis;
 
-	@MockitoBean
-	private LlmProvider provider;
+	@MockitoBean // replaces the real Ollama provider; the Mock provider stays real
+	private OllamaProvider provider;
 
 	private WebTestClient client;
 	private String adminToken;
@@ -197,8 +197,23 @@ class ModelAccessIntegrationTest {
 
 	@Test
 	void admin_canUseAnyModel() {
-		chat(adminToken, "claude-opus").expectStatus().isOk();
-		assertThat(modelSentToProvider()).isEqualTo("claude-opus");
+		chat(adminToken, "some-big-model").expectStatus().isOk(); // not on any member list
+		assertThat(modelSentToProvider()).isEqualTo("some-big-model");
+	}
+
+	@Test
+	void claudeModels_areSwitchedOffByDefault_with400() {
+		// Even the admin, and even with a key stored: the default setup never contacts Anthropic.
+		client.put().uri("/admin/providers/anthropic").header(HttpHeaders.AUTHORIZATION, "Bearer " + adminToken)
+				.contentType(MediaType.APPLICATION_JSON).bodyValue(Map.of("api_key", "sk-ant-not-used-123456")).exchange()
+				.expectStatus().isOk();
+		chat(adminToken, "claude-haiku-5-5").expectStatus().isBadRequest().expectBody()
+				.jsonPath("$.error.code").isEqualTo("invalid_model_request")
+				.jsonPath("$.error.message").value(v -> assertThat((String) v).contains("switched off"));
+
+		String[] m = member(List.of("claude-haiku-5-5"), null); // allowed by the admin, but still off
+		chat(m[1], "claude-haiku-5-5").expectStatus().isBadRequest();
+		db.sql("DELETE FROM provider_keys").fetch().rowsUpdated().block();
 	}
 
 	// ---------- GET /v1/models ----------
@@ -225,16 +240,22 @@ class ModelAccessIntegrationTest {
 	@Test
 	void models_adminSeesInstalledOllamaModels() {
 		models(adminToken).expectStatus().isOk().expectBody()
-				.jsonPath("$.data.length()").isEqualTo(3)
-				.jsonPath("$.data[1].id").isEqualTo("qwen2.5:7b");
+				// 3 Ollama + mock (Claude is switched off by default, so none of its models show)
+				.jsonPath("$.data.length()").isEqualTo(4)
+				.jsonPath("$.data[1].id").isEqualTo("qwen2.5:7b")
+				.jsonPath("$.data[3].id").isEqualTo("mock")
+				.jsonPath("$.data[3].owned_by").isEqualTo("switchboard")
+				.jsonPath("$.data[?(@.owned_by == 'anthropic')]").doesNotExist();
 	}
 
 	@Test
 	void models_adminFallsBackToDefaultIfOllamaUnreachable() {
 		when(provider.listModels()).thenReturn(Flux.error(new RuntimeException("connection refused")));
 		models(adminToken).expectStatus().isOk().expectBody()
-				.jsonPath("$.data.length()").isEqualTo(1)
-				.jsonPath("$.data[0].id").isEqualTo("llama3.2");
+				// Ollama's default model stands in for the unreachable Ollama list
+				.jsonPath("$.data.length()").isEqualTo(2)
+				.jsonPath("$.data[0].id").isEqualTo("llama3.2")
+				.jsonPath("$.data[1].id").isEqualTo("mock");
 	}
 
 	@Test

@@ -13,6 +13,8 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.switchboard.gateway.auth.MemberPrincipal;
 import com.switchboard.gateway.member.MemberService;
 import com.switchboard.gateway.provider.LlmProvider;
+import com.switchboard.gateway.provider.ProviderRegistry;
+import com.switchboard.gateway.provider.mock.MockProvider;
 import com.switchboard.gateway.provider.ollama.OllamaProperties;
 
 import reactor.core.publisher.Flux;
@@ -28,12 +30,12 @@ public class ModelsController {
 	private static final Logger log = LoggerFactory.getLogger(ModelsController.class);
 
 	private final MemberService members;
-	private final LlmProvider provider;
+	private final ProviderRegistry providers;
 	private final OllamaProperties ollama;
 
-	public ModelsController(MemberService members, LlmProvider provider, OllamaProperties ollama) {
+	public ModelsController(MemberService members, ProviderRegistry providers, OllamaProperties ollama) {
 		this.members = members;
-		this.provider = provider;
+		this.providers = providers;
 		this.ollama = ollama;
 	}
 
@@ -45,21 +47,32 @@ public class ModelsController {
 		return names.map(list -> new ModelList("list", list.stream().map(ModelsController::entry).toList()));
 	}
 
+	/** Every model every active provider can serve right now (one provider failing doesn't hide the rest). */
 	private Mono<List<String>> installedModels() {
+		return Flux.fromIterable(providers.all())
+				// If Ollama can't be listed (e.g. it's down), still show its default model.
+				.concatMap(p -> "ollama".equals(p.name())
+						? safeList(p).switchIfEmpty(Flux.just(ollama.defaultModel()))
+						: safeList(p))
+				.distinct()
+				.collectList();
+	}
+
+	private static Flux<String> safeList(LlmProvider provider) {
 		return Flux.defer(() -> {
 			Flux<String> f = provider.listModels();
 			return f == null ? Flux.<String>empty() : f;
-		})
-				.collectList()
-				.onErrorResume(e -> {
-					log.warn("Could not list Ollama models: {}", e.toString());
-					return Mono.just(List.of());
-				})
-				.map(list -> list.isEmpty() ? List.of(ollama.defaultModel()) : list);
+		}).onErrorResume(e -> {
+			log.warn("Could not list {} models: {}", provider.name(), e.toString());
+			return Flux.empty();
+		});
 	}
 
 	static ModelEntry entry(String name) {
-		String owner = name.toLowerCase(Locale.ROOT).startsWith("claude") ? "anthropic" : "ollama";
+		String lower = name.toLowerCase(Locale.ROOT);
+		String owner = lower.startsWith("claude") ? "anthropic"
+				: (lower.equals(MockProvider.NAME) || lower.startsWith(MockProvider.NAME + "-")) ? "switchboard"
+						: "ollama";
 		return new ModelEntry(name, "model", 0, owner);
 	}
 

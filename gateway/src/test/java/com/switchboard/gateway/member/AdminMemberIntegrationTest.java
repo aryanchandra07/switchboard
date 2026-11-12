@@ -27,7 +27,7 @@ import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.reactive.server.WebTestClient;
 
 import com.switchboard.gateway.TestcontainersConfiguration;
-import com.switchboard.gateway.provider.LlmProvider;
+import com.switchboard.gateway.provider.ollama.OllamaProvider;
 import com.switchboard.gateway.provider.ProviderResponse;
 import com.switchboard.gateway.user.UserRepository;
 
@@ -49,8 +49,8 @@ class AdminMemberIntegrationTest {
 	@Autowired
 	private UserRepository users;
 
-	@MockitoBean
-	private LlmProvider provider;
+	@MockitoBean // replaces the real Ollama provider; the Mock provider stays real
+	private OllamaProvider provider;
 
 	private WebTestClient client;
 	private String adminToken;

@@ -76,17 +76,19 @@ public class OllamaProvider implements LlmProvider {
 
 	/** Wraps any failure in a ProviderException with a message that is safe to show a client. */
 	private ProviderException toProviderException(Throwable e) {
-		String message;
 		if (e instanceof TimeoutException) {
-			message = "Ollama did not respond within " + properties.timeout().toSeconds() + "s";
+			return new ProviderException(name(), "Ollama did not respond within " + properties.timeout().toSeconds()
+					+ "s", e, ProviderException.Kind.TIMEOUT);
 		}
-		else if (e instanceof WebClientResponseException w) {
-			message = "Ollama returned HTTP " + w.getStatusCode().value() + ": " + w.getResponseBodyAsString();
+		if (e instanceof WebClientResponseException w) {
+			// 4xx (e.g. 404 model not found) won't change on retry; 5xx might.
+			var kind = w.getStatusCode().is4xxClientError() ? ProviderException.Kind.PERMANENT
+					: ProviderException.Kind.TRANSIENT;
+			return new ProviderException(name(), "Ollama returned HTTP " + w.getStatusCode().value() + ": "
+					+ w.getResponseBodyAsString(), e, kind);
 		}
-		else {
-			message = "Could not reach Ollama at " + properties.baseUrl();
-		}
-		return new ProviderException(name(), message, e);
+		return new ProviderException(name(), "Could not reach Ollama at " + properties.baseUrl(), e,
+				ProviderException.Kind.TRANSIENT);
 	}
 
 	@JsonIgnoreProperties(ignoreUnknown = true)
