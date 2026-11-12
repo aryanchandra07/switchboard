@@ -244,8 +244,8 @@ By combining model benchmarking, intelligent routing, heuristic evaluation, and 
 ## 16. Author
 
 **Shaik Ahamed Ali**
-** Aryan Chandra**
-** Chaitanya Narkedamilly **
+**Aryan Chandra**
+**Chaitanya Narkedamilly**
 
 M.E. Software Systems  
 BITS Pilani, Dubai Campus
