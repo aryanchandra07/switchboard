@@ -1,0 +1,81 @@
+
+#root {
+  width: 100%;
+  min-height: 100vh;
+}
+
+.app-layout {
+  display: flex;
+  min-height: 100vh;
+  background: #0b1120;
+  color: #f8fafc;
+}
+
+.main-content {
+  flex: 1;
+  min-width: 0;
+  padding: 36px;
+}
+
+.page {
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.page-header {
+  margin-bottom: 40px;
+}
+
+.page-header h1 {
+  font-size: 30px;
+  font-weight: 700;
+  margin: 0 0 10px;
+}
+
+.page-header p {
+  color: #94a3b8;
+  font-size: 15px;
+  margin: 0;
+}
+
+.welcome-container {
+  min-height: 440px;
+  border: 1px solid #253047;
+  border-radius: 16px;
+  background: #111827;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 24px;
+}
+
+.welcome-icon {
+  width: 72px;
+  height: 72px;
+  border-radius: 20px;
+  background: #312e81;
+  color: #c4b5fd;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.welcome-container h2 {
+  font-size: 24px;
+  margin: 24px 0 8px;
+}
+
+.welcome-container p {
+  color: #94a3b8;
+}
+
+.welcome-feature {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 25px;
+  color: #a78bfa;
+}
