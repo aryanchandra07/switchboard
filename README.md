@@ -91,7 +91,33 @@ switchboard/
 
 The system follows a modular architecture consisting of task input, task classification, intelligent model routing, local model execution, response evaluation, metrics calculation, result storage, and dashboard visualization.
 
-The architecture diagram will be added in this section.
+
+## 7.1 System Architecture Diagram
+
+The following diagram illustrates the workflow of the Switchboard system, from user task submission to model selection, evaluation, and dashboard visualization.
+
+```mermaid
+flowchart TD
+    A["User Task Input"] --> B["Task Category and Difficulty"]
+    B --> C["Intelligent Model Router"]
+    C --> D["Ollama Local Inference"]
+
+    D --> E1["Llama 3.2 3B"]
+    D --> E2["Qwen 2.5 Coder 3B"]
+    D --> E3["Qwen 2.5 3B"]
+    D --> E4["DeepSeek R1 1.5B"]
+
+    E1 --> F["Model Response"]
+    E2 --> F
+    E3 --> F
+    E4 --> F
+
+    F --> G["Evaluation Module"]
+    G --> H["Metrics Calculation"]
+    H --> I["JSON and CSV Results"]
+    I --> J["Streamlit Dashboard"]
+    J --> K["Performance Visualization"]
+```
 
 ## 8. LLM Models Evaluated
 
